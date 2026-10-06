@@ -128,10 +128,12 @@ def line_out(line: PricedLine) -> CartLineOut:
     )
 
 
-def build_cart(db: DB, requests: list[LineRequest], promo_code: str | None) -> CartOut:
+def build_cart(
+    db: DB, requests: list[LineRequest], promo_code: str | None, delivery: str = "standard"
+) -> CartOut:
     lines = pricing.price_lines(db, requests)
     promo = pricing.load_promo(db, promo_code)
-    totals = pricing.totals_for_lines(lines, promo)
+    totals = pricing.totals_for_lines(lines, promo, delivery)
     return CartOut(
         items=[line_out(x) for x in lines if not x.request.saved_for_later],
         saved=[line_out(x) for x in lines if x.request.saved_for_later],
@@ -166,8 +168,8 @@ def user_requests(db: DB, user: User) -> list[LineRequest]:
     ]
 
 
-def user_cart(db: DB, user: User, promo: str | None) -> CartOut:
-    return build_cart(db, user_requests(db, user), promo)
+def user_cart(db: DB, user: User, promo: str | None, delivery: str = "standard") -> CartOut:
+    return build_cart(db, user_requests(db, user), promo, delivery)
 
 
 def _own_item(db: DB, user: User, item_id: int) -> CartItem:
@@ -203,8 +205,14 @@ Promo = Annotated[str | None, Query(max_length=40)]
 
 
 @router.get("", response_model=CartOut)
-def get_cart(db: DB, user: CurrentUser, promo: Promo = None) -> CartOut:
-    return user_cart(db, user, promo)
+def get_cart(
+    db: DB,
+    user: CurrentUser,
+    promo: Promo = None,
+    delivery: Annotated[str, Query(pattern="^(standard|one_day)$")] = "standard",
+) -> CartOut:
+    """The cart; `delivery` lets checkout preview One-Day shipping in the totals."""
+    return user_cart(db, user, promo, delivery)
 
 
 @router.post("/price", response_model=CartOut)

@@ -174,3 +174,38 @@ in `frontend/src/app/globals.css` once the screenshot is available.
 | Sticky bottom bar with total and Checkout on phones | The summary is otherwise far below the items. *(approved)* |
 | Buying/Selling switch segments are 36px tall | Easier to tap than the slim pill. |
 | Removed Instant Pay, PayPal, Apple Pay and financing buttons | Only Stripe Checkout exists; fake payment buttons would be dead controls. |
+
+## Milestone 7: Checkout, Stripe, webhook and orders (2026-10-07)
+
+- `/checkout` (sign-in required, with return URL): (1) shipping address, pre-filled from the default
+  address, validated in the browser and on the API, with "Save as my default address"; (2) review items
+  and pick Standard (FREE over $35, otherwise $5.99) or One-Day ($9.99). Totals come from the server for
+  the chosen method.
+- "Place order and pay" creates a `pending` order with title, price, image, store and address snapshots,
+  then a Stripe Checkout Session in test mode. Stripe's total always equals the order total: product lines,
+  plus an "Estimated tax" line, minus a one-time coupon for the promo, plus a fixed shipping rate. A guard
+  refuses to create a session if they ever differ. Adaptive Pricing is off, so Stripe never charges a
+  converted local-currency amount.
+- Webhook `POST /api/v1/webhooks/stripe` (signature checked): `checkout.session.completed` marks the
+  order paid, reduces stock (product and color), updates deal "claimed" counts and removes the purchased
+  lines from the cart. The status change is a single conditional UPDATE, so a repeated event does nothing.
+  `checkout.session.expired` cancels the pending order.
+- `/checkout/success`: asks the API to confirm the payment with Stripe (the redirect alone is never
+  trusted; this uses the same idempotent step as the webhook), polls until paid, then shows the order
+  number, items, address, estimated delivery and totals.
+- Cancel on Stripe returns to the cart with "Checkout was cancelled. You weren't charged."
+- `/orders` and `/orders/[id]`: status ("Preparing", "Partially shipped", "Shipped", "Delivered"),
+  each item's "Shipped by <store> on <date>" or "Preparing at <store>", address and payment summary.
+- Tested for real against Stripe test mode with card 4242: the app, the Stripe page and the order
+  record all showed $366.35. The order became `paid`, the cart emptied and stock went down.
+- Backend tests (20, against a throwaway schema): pricing maths, Stripe total = order total, stock
+  limits, cart merge rules, guest and signed-in totals match, `mark_paid` runs once, webhook signature
+  rejected or accepted, duplicate webhook doesn't double-decrement stock, orders private to their buyer,
+  auth messages.
+
+**Design changes, with reasons**
+| Change | Why |
+|---|---|
+| Two clear steps with a numbered header and a sticky summary | Easy to see what's left before paying. |
+| Delivery options show the arrival day | People choose by date, not by method name. |
+| Test card hint next to the Pay button | Reviewers know which card to use in test mode. |

@@ -83,6 +83,8 @@ def session_params(order: Order, email: str, base_url: str, coupon_id: str | Non
         "success_url": f"{base_url}/checkout/success?order={order.id}&session_id={{CHECKOUT_SESSION_ID}}",
         "cancel_url": f"{base_url}/cart?checkout=cancelled",
         "expires_at": int((datetime.now(UTC) + timedelta(minutes=31)).timestamp()),
+        # Charge exactly the USD total on the order record; no local-currency conversion.
+        "adaptive_pricing": {"enabled": False},
     }
     if coupon_id:
         params["discounts"] = [{"coupon": coupon_id}]

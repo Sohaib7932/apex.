@@ -1,12 +1,7 @@
-import os
+from fastapi.testclient import TestClient
 
-# Tests never need a real database; give Settings a dummy URL before the app imports it.
-os.environ.setdefault("DATABASE_URL", "postgresql://test:test@localhost:5432/test")
-
-from fastapi.testclient import TestClient  # noqa: E402
-
-from app.main import app  # noqa: E402
-from app.routers.health import get_db_check  # noqa: E402
+from app.main import app
+from app.routers.health import get_db_check
 
 
 def _client(db_check):
@@ -15,7 +10,7 @@ def _client(db_check):
 
 
 def teardown_function():
-    app.dependency_overrides.clear()
+    app.dependency_overrides.pop(get_db_check, None)
 
 
 def test_health_ok():
