@@ -16,7 +16,7 @@ export function Footer() {
         Back to top
       </a>
 
-      <div className="mx-auto grid max-w-[1500px] grid-cols-2 gap-x-6 gap-y-8 px-4 py-10 md:grid-cols-4 md:px-6">
+      <div className="mx-auto grid max-w-375 grid-cols-2 gap-x-6 gap-y-8 px-4 py-10 md:grid-cols-4 md:px-6">
         {footerColumns.map((col) => (
           <section key={col.title}>
             <h2 className="mb-3 text-base font-bold">{col.title}</h2>
@@ -34,7 +34,7 @@ export function Footer() {
       </div>
 
       <div className="bg-chrome-2">
-        <div className="mx-auto flex max-w-[1500px] flex-col gap-4 px-4 py-5 md:flex-row md:items-center md:justify-between md:px-6">
+        <div className="mx-auto flex max-w-375 flex-col gap-4 px-4 py-5 md:flex-row md:items-center md:justify-between md:px-6">
           <div className="flex flex-wrap items-center gap-2">
             <Logo className="mr-2" />
             {[

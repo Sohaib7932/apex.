@@ -28,7 +28,7 @@ export function SubNav() {
 
   return (
     <nav aria-label="Departments" className="bg-chrome-2 text-on-chrome">
-      <div className="mx-auto flex max-w-[1500px] items-center gap-1 px-3 sm:px-4">
+      <div className="mx-auto flex max-w-375 items-center gap-1 px-3 sm:px-4">
         <button
           type="button"
           onClick={() => drawer.current?.showModal()}

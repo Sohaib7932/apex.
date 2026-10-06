@@ -38,3 +38,41 @@ What changed in each milestone, and every deliberate change from the reference d
 **Pending**
 - Seller green and the switch's cream track are **placeholders** until `design/seller-toggle.png` is provided. They are five tokens in `globals.css` (`--color-seller*`, `--color-switch-track`).
 - The ModeSwitch is built but hidden, because it is signed-in only and auth arrives in M5. See `/styleguide`.
+
+## Milestone 2: Database, seed data and Home (2026-10-07)
+
+**Backend**
+- Full schema in one Alembic migration (`pg_trgm` + trigram index on titles, GIN on facets, the PRD indexes).
+  Includes sellers, product `status` and `seller_id`, and order-item seller and fulfillment fields from the start.
+- The cart and order lines carry both `variant_id` (color) and `edition_id` (edition), because the product
+  page lets you pick one of each. The PRD's single `variant_id` couldn't represent that.
+- `seed.py`: 3 stores, 54 published products and 4 drafts, 165 reviews, 5 deals, 4 promo codes (APEX10, WELCOME15
+  and SAVE20 are valid; SUMMER5 is expired), and 47 orders over 30 days. It refuses to run on seeded data
+  unless you pass `--reset`.
+- Public API: `/home`, `/products` (search, filters, sort, pages), `/search/filters`, `/products/{slug}`,
+  `/related`, `/reviews`, `/categories`, `/brands`.
+- Deals restart every 12 hours, so countdowns on the live demo never stay at zero.
+- Product photos are free-licence Unsplash images, stored in `frontend/public/products`
+  (`SOURCES.json` lists the originals). The gallery's extra shots are close-up crops of the main photo.
+
+**Frontend**
+- The browser calls only `/api/*` on its own origin; Next.js proxies to `API_URL`. Server components call
+  `API_URL` directly and never throw: a failed call renders an error state with a retry button.
+- The root layout reads the session cookie, so every page renders at request time and `next build`
+  never needs the API.
+- Home page: delivery bar, hero with spotlight product, department tiles, the 4-card deals grid (with a live
+  deal-of-the-day countdown), the trending carousel, flash deals, the featured brand and trust badges.
+  Everything comes from `/home`.
+
+**Design changes, with reasons**
+| Change | Why |
+|---|---|
+| "Keep shopping for" uses products recently viewed in this browser, or "Popular right now" | No tracking of signed-out visitors, and the card is never empty. |
+| Card buttons pinned to the bottom of each card | Add to Cart lines up across a row. *(approved)* |
+| Department tiles 48px icon, 12-14px labels; section spacing 40px | The design's ~10px labels were hard to read. *(approved)* |
+| Carousel arrows 44px, plus native swipe with snap points | Easy to use with touch, mouse and keyboard. |
+| One featured brand chosen from the data (the third-party brand with the most products) | The section reflects real data, not hard-coded copy. |
+
+**Seller colors:** `design/seller-toggle.png` was never added to the repo, so the seller tokens still use
+the PRD's muted forest green `#2F6B4F`. Swap the five `--color-seller*` / `--color-switch-track` values
+in `frontend/src/app/globals.css` once the screenshot is available.

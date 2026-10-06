@@ -34,8 +34,10 @@ class Settings(BaseSettings):
     jwt_secret: SecretStr = SecretStr("")
     stripe_secret_key: SecretStr = SecretStr("")
     stripe_webhook_secret: SecretStr = SecretStr("")
-    # Comma-separated list of browser origins allowed by CORS.
-    cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=lambda: ["http://localhost:3000"])
+    # Public URL of the Next.js site; used for Stripe success/cancel redirects.
+    frontend_url: str = ""
+    # Comma-separated list of browser origins allowed by CORS. Defaults to frontend_url.
+    cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -43,6 +45,16 @@ class Settings(BaseSettings):
         if isinstance(v, str) and not v.strip().startswith("["):
             return [o.strip() for o in v.split(",") if o.strip()]
         return v
+
+    @property
+    def is_production(self) -> bool:
+        return self.environment == "production"
+
+    @property
+    def allowed_origins(self) -> list[str]:
+        if self.cors_origins:
+            return self.cors_origins
+        return [self.frontend_url.rstrip("/")] if self.frontend_url else []
 
     @property
     def sqlalchemy_url(self) -> str:

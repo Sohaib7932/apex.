@@ -1,21 +1,24 @@
+"use client";
+
 import { ChevronDown, Search } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { departments } from "@/lib/nav";
 
-/** Plain GET form, so search works before any JavaScript loads. */
-export function SearchBar({ className = "" }: { className?: string }) {
+function Form({ q = "", category = "" }: { q?: string; category?: string }) {
   return (
     <form
       action="/search"
       role="search"
-      className={`flex h-10 min-w-0 overflow-hidden rounded-control bg-surface ring-primary focus-within:ring-2 ${className}`}
+      className="flex h-11 w-full min-w-0 overflow-hidden rounded-control bg-surface ring-primary focus-within:ring-2"
     >
       <label className="relative hidden shrink-0 sm:block">
         <span className="sr-only">Department</span>
         <select
           name="category"
-          defaultValue=""
-          className="h-full appearance-none border-r border-line bg-surface-tint py-0 pr-7 pl-3 text-xs font-medium text-ink outline-none"
+          defaultValue={category}
+          key={category}
+          className="h-full max-w-40 appearance-none border-r border-line bg-surface-tint py-0 pr-7 pl-3 text-xs font-medium text-ink outline-none"
         >
           {departments.map((d) => (
             <option key={d.value} value={d.value}>
@@ -33,8 +36,11 @@ export function SearchBar({ className = "" }: { className?: string }) {
         <input
           type="search"
           name="q"
+          defaultValue={q}
+          key={q}
+          maxLength={100}
           placeholder="Search products, brands and more"
-          className="min-w-0 flex-1 bg-surface px-3 text-sm text-ink outline-none placeholder:text-ink-subtle"
+          className="min-w-0 flex-1 bg-surface px-3 text-base text-ink outline-none placeholder:text-ink-subtle sm:text-sm"
         />
       </label>
       <button
@@ -46,4 +52,16 @@ export function SearchBar({ className = "" }: { className?: string }) {
       </button>
     </form>
   );
+}
+
+/** Plain GET form, so search works before JavaScript loads. Pre-filled on /search. */
+export function SearchBar() {
+  const pathname = usePathname();
+  const params = useSearchParams();
+  const onSearch = pathname === "/search";
+  return <Form q={onSearch ? (params.get("q") ?? "") : ""} category={onSearch ? (params.get("category") ?? "") : ""} />;
+}
+
+export function SearchBarFallback() {
+  return <Form />;
 }

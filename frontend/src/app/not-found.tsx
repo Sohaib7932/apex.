@@ -1,17 +1,47 @@
+import { SearchX } from "lucide-react";
 import Link from "next/link";
+
+import { Footer } from "@/components/layout/Footer";
+import { ButtonLink } from "@/components/ui/Button";
+
+const POPULAR = [
+  { label: "Headphones", href: "/search?category=audio" },
+  { label: "Keyboards", href: "/search?category=keyboards" },
+  { label: "Laptops", href: "/search?category=laptops" },
+  { label: "Today's Deals", href: "/search?deals=today" },
+];
 
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-      <p className="text-sm font-bold uppercase tracking-wide text-accent-text">404</p>
-      <h1 className="mt-2 text-2xl font-extrabold">We couldn&apos;t find that page</h1>
-      <p className="mt-3 text-ink-muted">It may have moved, or it hasn&apos;t been built yet.</p>
-      <Link
-        href="/"
-        className="mt-6 inline-block rounded-control bg-primary px-5 py-2.5 text-sm font-bold text-on-primary hover:bg-primary-hover"
-      >
-        Go to the home page
-      </Link>
-    </div>
+    <>
+      <main id="main" className="flex-1">
+        <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:py-24">
+          <span className="mx-auto grid size-16 place-items-center rounded-pill bg-primary-soft text-accent-text">
+            <SearchX aria-hidden="true" className="size-8" />
+          </span>
+          <p className="mt-6 text-sm font-bold uppercase tracking-wide text-accent-text">Error 404</p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight">We couldn&apos;t find that page</h1>
+          <p className="mt-3 text-base text-ink-muted">
+            The link may be old, or the product may no longer be for sale. Try searching, or start from one of these:
+          </p>
+          <ul className="mt-6 flex flex-wrap justify-center gap-2">
+            {POPULAR.map((p) => (
+              <li key={p.href}>
+                <Link
+                  href={p.href}
+                  className="inline-flex min-h-11 items-center rounded-pill border border-line bg-surface px-4 text-sm font-semibold hover:bg-surface-tint"
+                >
+                  {p.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <ButtonLink href="/" size="lg" className="mt-8">
+            Go to the home page
+          </ButtonLink>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 }
