@@ -96,3 +96,24 @@ in `frontend/src/app/globals.css` once the screenshot is available.
 |---|---|
 | 48px inputs with 16px text | Easy to tap, and iOS doesn't zoom into the field. |
 | Errors are worded as fixes ("Use at least 8 characters.") | They tell people what to do, not just what went wrong. |
+
+## Milestone 4: Search (2026-10-07)
+
+- `/search` keeps the query, department, brands, price, rating, delivery, stock, keyboard facets, sort,
+  page, page size and grid/list view in the URL. Links are shareable and Back works (tested in a browser).
+- Sidebar: department, Apex One-Day, in stock, customer reviews, brand (with a search box when there are
+  more than 7), price ranges plus custom min/max, and facets from the data
+  (switch type, connectivity, form factor, hot-swap, headphone type, resolution...). Counts come from `/search/filters`.
+- Active filter chips, each removable, plus "Clear all filters" (keeps the search words and department).
+- Result count ("1-16 of 23 results for ..."), sort (Featured, price both ways, rating, newest),
+  pagination with page numbers and a per-page selector.
+- A "deal spotlight" banner built from the first deal in the results.
+- No-results state: tips, popular searches and popular products. Loading skeleton while results load.
+
+**Design changes, with reasons**
+| Change | Why |
+|---|---|
+| Card buttons pinned to the bottom of each card | Add to Cart lines up across a row even when titles wrap. *(approved)* |
+| Filters open in a full-height drawer on phones and tablets, with "Show N results" | The sidebar doesn't fit at 390px. *(approved)* |
+| Results fade while a new filter loads; checkboxes update instantly | Visible feedback even on a slow connection. |
+| 40-44px rows for filter options and page numbers | Easy to tap. |
