@@ -23,13 +23,13 @@ export function ModeSwitch({ hasStore, mode, className = "" }: Props) {
   const sellingHref = hasStore ? "/seller" : "/seller/start";
 
   const base =
-    "rounded-pill px-3 py-1.5 text-2xs font-bold uppercase tracking-wide transition-colors";
+    "inline-flex min-h-9 items-center rounded-pill px-3.5 text-2xs font-bold uppercase tracking-wide transition-colors";
   const idle = "text-ink-muted hover:text-ink";
 
   return (
     <nav
       aria-label="Shopping mode"
-      className={`inline-flex items-center gap-0.5 rounded-pill bg-switch-track p-1 ${className}`}
+      className={`items-center gap-0.5 rounded-pill bg-switch-track p-1 ${className || "inline-flex"}`}
     >
       <Link
         href="/"

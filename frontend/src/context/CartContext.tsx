@@ -137,36 +137,53 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const promoQuery = () => (promoRef.current ? `?promo=${encodeURIComponent(promoRef.current)}` : "");
 
+  // Which user the latest load was for; results for anyone else are stale and dropped.
+  const userIdRef = useRef<number | null>(userId);
+  const generation = useRef(0);
+  const mergeInFlight = useRef<Promise<Cart> | null>(null);
+
   const priceGuest = useCallback(async (lines: GuestLine[]): Promise<Cart> => {
     const body = (items: GuestLine[]) => ({ method: "POST", body: { items, promo: promoRef.current } });
     const priced = await api<Cart>("/cart/price", body(lines));
-    // Store what the server resolved (default color/edition), merging duplicates.
+    // Store what the server resolved (default color/edition), merging duplicates,
+    // unless the visitor signed in while this request was in flight.
     const resolved = normalize(toGuestLines(priced));
-    writeLocal(CART_KEY, resolved);
+    if (userIdRef.current === null) writeLocal(CART_KEY, resolved);
     return resolved.length !== priced.items.length + priced.saved.length
       ? api<Cart>("/cart/price", body(resolved))
       : priced;
   }, []);
 
   const load = useCallback(async () => {
+    userIdRef.current = userId;
+    const gen = ++generation.current;
     try {
+      let next: Cart;
       if (userId === null) {
-        setCartBoth(await priceGuest(readLocal<GuestLine[]>(CART_KEY, [])));
+        next = await priceGuest(readLocal<GuestLine[]>(CART_KEY, []));
       } else {
         const guest = readLocal<GuestLine[]>(CART_KEY, []);
         if (guest.length) {
-          const merged = await api<Cart>(`/cart/merge${promoQuery()}`, { method: "POST", body: { items: guest } });
+          // One merge at a time, even if the effect runs twice.
+          mergeInFlight.current ??= api<Cart>(`/cart/merge${promoQuery()}`, {
+            method: "POST",
+            body: { items: guest },
+          }).finally(() => {
+            mergeInFlight.current = null;
+          });
+          next = await mergeInFlight.current;
           writeLocal(CART_KEY, []);
-          setCartBoth(merged);
         } else {
-          setCartBoth(await api<Cart>(`/cart${promoQuery()}`));
+          next = await api<Cart>(`/cart${promoQuery()}`);
         }
       }
+      if (gen !== generation.current) return;
+      setCartBoth(next);
       setFailed(false);
     } catch {
-      setFailed(true);
+      if (gen === generation.current) setFailed(true);
     } finally {
-      setLoading(false);
+      if (gen === generation.current) setLoading(false);
     }
   }, [userId, priceGuest, setCartBoth]);
 
@@ -174,9 +191,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     promoRef.current = readLocal<string | null>(PROMO_KEY, null);
     void (async () => {
       setPromoCode(promoRef.current);
+      // Signing in or out swaps the whole cart; show loading instead of the old one.
+      if (userIdRef.current !== userId) setLoading(true);
       await load();
     })();
-  }, [load]);
+  }, [load, userId]);
 
   /** Run a mutation with an optimistic local update and rollback on failure. */
   const mutate = useCallback(

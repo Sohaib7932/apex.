@@ -145,3 +145,32 @@ in `frontend/src/app/globals.css` once the screenshot is available.
 | Buy box is sticky on desktop | Add to Cart stays in view while you read specs. |
 | Star bars filter the review list | The bars were display-only in the design; now they're useful. |
 | "Add to Apex Wishlist" left out | Wishlist is P1 and first on the PRD's cut list. A button that does nothing would be a dead control. |
+
+## Milestone 6: Cart (2026-10-07)
+
+- `/cart`: free-delivery progress ($35 threshold), line items with stock status, delivery date, store and
+  options, quantity stepper, Delete, Save for later, and select/deselect (only selected items are totalled
+  and checked out).
+- Saved for Later with Move to Cart, Delete and "Move all to cart".
+- Order summary from the server: items subtotal, promo discount, delivery (FREE or $5.99), 8% tax and
+  order total. Promo codes (APEX10, WELCOME15, SAVE20) are checked by the API; invalid or expired codes
+  show a clear message.
+- "Customers who bought items in your cart also bought" (same departments, excluding what's in the cart).
+- Quantity and save-for-later changes are optimistic, with rollback and an error toast if the server
+  refuses (e.g. "Only 3 left in stock.").
+- Guest cart: stored in localStorage and priced by `POST /cart/price`. On sign-in it merges into the
+  account cart (no duplicates, higher quantity wins) and the local copy is cleared. A late guest request
+  can no longer write the old cart back after sign-in.
+- Checkout is blocked, with the reason shown, when nothing is selected or a selected line has too
+  little stock.
+- Returning from a cancelled Stripe checkout shows "Checkout was cancelled. You weren't charged."
+- Tested in a browser: edition price, protection plan line, quantity, save/move, bad and good promo codes.
+  Totals matched `subtotal - 10% + 8% tax` to the cent, and the merge on sign-in worked.
+
+**Design changes, with reasons**
+| Change | Why |
+|---|---|
+| Quantity, Delete and Save for later are 44px controls; at quantity 1 the minus becomes a trash icon | The design's tiny text links were hard to tap. *(approved)* |
+| Sticky bottom bar with total and Checkout on phones | The summary is otherwise far below the items. *(approved)* |
+| Buying/Selling switch segments are 36px tall | Easier to tap than the slim pill. |
+| Removed Instant Pay, PayPal, Apple Pay and financing buttons | Only Stripe Checkout exists; fake payment buttons would be dead controls. |
