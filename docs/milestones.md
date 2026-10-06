@@ -76,3 +76,23 @@ What changed in each milestone, and every deliberate change from the reference d
 **Seller colors:** `design/seller-toggle.png` was never added to the repo, so the seller tokens still use
 the PRD's muted forest green `#2F6B4F`. Swap the five `--color-seller*` / `--color-switch-track` values
 in `frontend/src/app/globals.css` once the screenshot is available.
+
+## Milestone 3: Accounts and the Buying/Selling switch (2026-10-07)
+
+- `/login` and `/signup`: inline field errors (shown after submit, linked with `aria-describedby`),
+  a clear banner for server errors ("Incorrect email or password.", "An account with this email
+  already exists."), show/hide password, and a safe `?next=` return path.
+- One-click "Demo buyer" / "Demo seller" buttons fill the form, so reviewers don't have to type passwords.
+- Session: argon2 password hashes and a JWT in an httpOnly, SameSite=Lax cookie (Secure in production).
+  The cookie is first-party because the browser only talks to the Vercel origin.
+- Login rate limit: 10 attempts per 5 minutes per IP and email.
+- Header: "Hello, name" account menu (Your Account, Your Orders, Seller workspace / Start selling, Sign out)
+  and the Buying/Selling switch for signed-in users only.
+- `/account`: profile, saved addresses and quick links.
+- When the guest cart exists and you sign in, it is merged into your account cart (higher quantity wins).
+
+**Design changes, with reasons**
+| Change | Why |
+|---|---|
+| 48px inputs with 16px text | Easy to tap, and iOS doesn't zoom into the field. |
+| Errors are worded as fixes ("Use at least 8 characters.") | They tell people what to do, not just what went wrong. |
