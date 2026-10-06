@@ -62,6 +62,8 @@
   --color-seller-soft: #e3efe8;
   --color-on-seller: #ffffff;
   --color-switch-track: #f6efe0; /* cream pill background */
+  /* Chart bars: a slightly more saturated step of the seller green (passes the dataviz chroma/contrast checks). */
+  --color-seller-chart: #1f7a4f;
 
   /* ---- Radii ---- */
   --radius-control: 0.375rem; /* buttons, inputs */

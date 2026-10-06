@@ -38,6 +38,9 @@ def _test_db_url() -> str | None:
     return settings.sqlalchemy_url_unpooled
 
 
+_state: dict[str, str] = {}
+
+
 @pytest.fixture(scope="session")
 def engine():
     url = _test_db_url()
@@ -48,13 +51,30 @@ def engine():
     try:
         with admin.begin() as conn:
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
+            # Clean up schemas left by an interrupted earlier run (only our own naming pattern).
+            for (old,) in conn.execute(
+                text("SELECT nspname FROM pg_namespace WHERE nspname ~ '^test_[0-9a-f]{8}$'")
+            ):
+                conn.execute(text(f'DROP SCHEMA "{old}" CASCADE'))
             conn.execute(text(f'CREATE SCHEMA "{schema}"'))
     except Exception as e:  # pragma: no cover - depends on environment
         pytest.skip(f"Test database unreachable: {type(e).__name__}")
     eng = create_engine(
         url, connect_args={"options": f"-csearch_path={schema},public", "connect_timeout": 15}
     )
-    Base.metadata.create_all(eng)
+    # checkfirst=False: the existence check would find the real tables in `public`
+    # and skip creating them here. CREATE TABLE goes to the first schema on the path.
+    Base.metadata.create_all(eng, checkfirst=False)
+    with eng.connect() as conn:
+        home = conn.execute(
+            text(
+                "SELECT n.nspname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE c.oid = 'users'::regclass"
+            )
+        ).scalar()
+    if home != schema:
+        pytest.exit(f"Refusing to run: test tables resolve to schema {home!r}, not {schema!r}", returncode=2)
+    _state["schema"] = schema
     yield eng
     eng.dispose()
     with admin.begin() as conn:
@@ -68,7 +88,8 @@ def db(engine) -> Iterator[Session]:
     session = factory()
     yield session
     session.close()
-    tables = ", ".join(f'"{t.name}"' for t in Base.metadata.sorted_tables)
+    schema = _state["schema"]
+    tables = ", ".join(f'"{schema}"."{t.name}"' for t in Base.metadata.sorted_tables)
     with engine.begin() as conn:
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
     catalog_svc._tree_cache = None

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 import type { SessionUser } from "@/types/user";
 
@@ -8,11 +9,11 @@ export const SESSION_COOKIE = "apex_session";
 
 /**
  * Current signed-in user, or null for guests. Without a session cookie there is
- * no network call at all.
+ * no network call at all. Cached per request (layouts and pages share one lookup).
  */
-export async function getSessionUser(): Promise<SessionUser | null> {
+export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   const jar = await cookies();
   if (!jar.get(SESSION_COOKIE)) return null;
   const res = await apiGet<SessionUser>("/auth/me", { auth: true });
   return res.ok ? res.data : null;
-}
+});

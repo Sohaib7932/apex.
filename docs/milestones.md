@@ -209,3 +209,51 @@ in `frontend/src/app/globals.css` once the screenshot is available.
 | Two clear steps with a numbered header and a sticky summary | Easy to see what's left before paying. |
 | Delivery options show the arrival day | People choose by date, not by method name. |
 | Test card hint next to the Pay button | Reviewers know which card to use in test mode. |
+
+## Milestone 8: Seller workspace (2026-10-07)
+
+- `/seller/*` shares the Apex header (switch set to **Selling**), with a calmer green layout: a sidebar on
+  desktop, a bottom tab bar on phones, and no deal banners or department bar. Every page has loading,
+  empty and error states, plus a seller 404.
+- **Start selling** (`/seller/start`): store name (3-60 characters, unique, with a clear message if taken)
+  and description (up to 280, with a live counter). Afterwards the header switch knows you have a store.
+  Signed-out visitors are sent to sign in and back.
+- **Overview**: revenue, orders and units for the last 30 days; a low-stock count (links to Products filtered
+  to low stock); the all-time earnings balance (display only); a daily revenue chart over 30 days with
+  empty days shown as zero; the 5 latest orders; and a "N orders to ship" shortcut.
+- **Products**: table on desktop, cards on phones, title search, tabs (All, Published, Draft, Low stock)
+  with counts, Edit, Publish/Unpublish, and Delete with a confirmation dialog. A product that appears in
+  past orders is archived instead of deleted.
+- **Product form** (shared by Add and Edit): title, description, brand (existing or new), category,
+  price, list price (must be at least the price), stock, image URLs with live preview, reordering and
+  "Main" marking, variants (kind, label, price change, stock) and badges. Checked in the browser and
+  again on the API. "Save as draft" or "Publish".
+- **Orders**: filters (All, To ship, Shipped, Cancelled). Each row shows only this store's units and
+  subtotal and expands to its own lines, the shipping address and "Mark as shipped". The buyer's
+  order page updates straight away ("Shipped by <store>", "Partially shipped" until every store ships).
+- **Store settings**: name, description and logo URL with preview. "Sold by" lines change straight away.
+- **Access rules on the API**, covered by `tests/test_seller_access.py` (8 tests): store A gets 404 for
+  store B's products (read, edit, publish, unpublish, delete) and orders (read, ship); shared orders show
+  only A's lines; a user without a store gets 403 except when creating one; a `seller_id` sent by the
+  client is ignored; only paid orders ship; drafts never appear in public endpoints.
+- Browser test: the demo seller shipped Jordan's order and the buyer saw "Shipped by KeyForge Supply"; a new
+  product was published and found in search with "Sold by KeyForge Supply"; a brand-new user opened a store
+  from the header switch.
+
+**Chart:** a single series, so one color and no legend. Bars are capped at 24px with a 2px gap and a
+4px rounded top; only the peak day has a label; hover shows any day; "Show as a table" lists every day.
+A slightly more saturated green (`--color-seller-chart`, `#1f7a4f`) is used for bars because the
+muted UI green failed the chroma check in the dataviz validator.
+
+**Incident and fix:** the first database-test run truncated the demo data in the dev database. The
+table existence check in `create_all` looked through the search path into `public`, so the tests used
+the real tables. Fixed in `tests/conftest.py`: tables are created explicitly in the test schema, every
+`TRUNCATE` names the test schema, and the run stops if the tables resolve anywhere else. The demo data was
+re-seeded, and later test runs leave it untouched (checked: 20 users, 59 products and 47 orders before and after).
+
+**Design changes, with reasons**
+| Change | Why |
+|---|---|
+| Bottom tab bar on phones instead of a sidebar | Four sections reachable with a thumb. |
+| Orders expand in place instead of opening a new page | Ship a whole queue without losing your place. |
+| Seller green stays `#2F6B4F` (PRD value) | `design/seller-toggle.png` wasn't provided, so the colors couldn't be sampled. |
