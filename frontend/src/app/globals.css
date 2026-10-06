@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/*
+ * Apex design tokens (PRD section 8). Defined once here; Tailwind v4 turns each
+ * --color-*, --radius-*, --font-* and --shadow-* into utilities (bg-chrome,
+ * text-ink-muted, rounded-card, ...).
+ *
+ * Hex values were sampled from the reference screenshots in /design, except
+ * where a comment says the value was changed on purpose.
+ */
+@theme static {
+  /* ---- Type ---- */
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  /* Smallest text in the app is 12px (designs went down to ~10px). */
+  --text-2xs: 0.75rem;
+  --text-2xs--line-height: 1rem;
+
+  /* ---- Neutrals and surfaces ---- */
+  --color-ink: #0b1c30; /* headings and body text */
+  --color-ink-muted: #4d5566; /* secondary text; darker than the design's #8F9299 for AA contrast */
+  --color-ink-subtle: #6b7280;
+  --color-canvas: #f8f9ff; /* page background */
+  --color-surface: #ffffff; /* cards */
+  --color-surface-tint: #eff4ff; /* image wells, hero, inputs */
+  --color-surface-tint-2: #e5eeff; /* price box, secondary buttons */
+  --color-surface-tint-3: #dce9ff; /* banners, info panels */
+  --color-line: #dde3ee; /* borders and dividers */
+
+  /* ---- Chrome (header, sub-nav, footer) ---- */
+  --color-chrome: #000000; /* header + footer body */
+  --color-chrome-2: #161c24; /* sub-nav, back-to-top, legal row */
+  --color-chrome-line: #2a313b;
+  --color-on-chrome: #ffffff;
+  /* Sub-nav and footer links. Design had #44464A on #161C24 (~1.5:1); now ~10:1. */
+  --color-on-chrome-muted: #c9ced6;
+
+  /* ---- Buying (storefront) primary: orange ---- */
+  --color-primary: #fe932c;
+  --color-primary-hover: #f2851a;
+  --color-primary-soft: #ffdcc3; /* peach icon wells, coupon chips */
+  /* Text on orange. Design used white (~2.2:1); dark ink reads at ~8:1. */
+  --color-on-primary: #1a0f00;
+  --color-accent-text: #904d00; /* orange-family text links and labels */
+
+  /* ---- Status ---- */
+  --color-star: #fe8500;
+  --color-deal: #840000; /* discount text */
+  --color-deal-soft: #ffdad6; /* discount badge background */
+  --color-success: #1d7a46;
+  --color-danger: #b42318;
+
+  /*
+   * ---- Selling (seller workspace + Buying/Selling switch) ----
+   * PLACEHOLDER VALUES. These must be sampled from design/seller-toggle.png,
+   * which has not been provided yet. Every seller surface reads these tokens,
+   * so swapping the four hexes below re-themes all of it.
+   */
+  --color-seller: #2f6b4f;
+  --color-seller-hover: #265a42;
+  --color-seller-soft: #e3efe8;
+  --color-on-seller: #ffffff;
+  --color-switch-track: #f6efe0; /* cream pill background */
+
+  /* ---- Radii ---- */
+  --radius-control: 0.375rem; /* buttons, inputs */
+  --radius-card: 0.625rem;
+  --radius-pill: 9999px;
+
+  /* ---- Elevation ---- */
+  --shadow-card: 0 1px 2px rgb(11 28 48 / 0.06), 0 1px 3px rgb(11 28 48 / 0.04);
+  --shadow-pop: 0 8px 24px rgb(11 28 48 / 0.14);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
