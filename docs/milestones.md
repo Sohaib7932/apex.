@@ -257,3 +257,21 @@ re-seeded, and later test runs leave it untouched (checked: 20 users, 59 product
 | Bottom tab bar on phones instead of a sidebar | Four sections reachable with a thumb. |
 | Orders expand in place instead of opening a new page | Ship a whole queue without losing your place. |
 | Seller green stays `#2F6B4F` (PRD value) | `design/seller-toggle.png` wasn't provided, so the colors couldn't be sampled. |
+
+## Milestone 9: Polish and deploy check (2026-10-07)
+
+- **Responsive sweep:** 27 pages (signed out, buyer, seller, new user) at 390, 820 and 1440px, 81 page loads.
+  No sideways scroll and no console errors on any of them. Fixed along the way: a carousel's
+  screen-reader text widened the page; the Buying/Selling switch showed twice on phones; the cart
+  had no `<h1>` when empty; and the seller Overview and missing-product page titles were wrong.
+- **Dead links:** a crawler followed all 122 internal links from the main pages (signed out, buyer
+  and seller) in a real browser. None lead to a 404. A known-missing product was included as a
+  control and was correctly flagged.
+- **Vercel readiness:** no `localhost` URLs in the code (only in the `.env.example` comments). `next build`
+  passes with the API unreachable, because every page renders on request. Product photos are local
+  files in `public/products`, and the `images.unsplash.com` host is allowed for seller image URLs.
+- **Render:** `render.yaml` runs `alembic upgrade head` before starting, with a health check on `/health`.
+- **README:** short steps to run locally and deploy to Render then Vercel, which variables go where,
+  Stripe webhook setup, demo accounts and promo codes.
+- **Final checks:** backend ruff clean and 28/28 tests pass; frontend lint, typecheck and `next build` pass.
+- The dev database was re-seeded afterwards, so the demo starts clean.

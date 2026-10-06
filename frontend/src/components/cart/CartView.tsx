@@ -48,6 +48,8 @@ export function CartView({ cancelled }: { cancelled: boolean }) {
       )}
 
       {cart.items.length === 0 ? (
+        <>
+        <h1 className="sr-only">Shopping Cart</h1>
         <EmptyState
           icon={<ShoppingCart aria-hidden="true" className="size-7" />}
           title="Your Apex Cart is empty"
@@ -57,6 +59,7 @@ export function CartView({ cancelled }: { cancelled: boolean }) {
             ? "You have items saved for later below. Move them back when you're ready."
             : "Browse the store and add something you love. Your cart is saved on this device."}
         </EmptyState>
+        </>
       ) : (
         <>
           <FreeDeliveryProgress summary={cart.summary} />

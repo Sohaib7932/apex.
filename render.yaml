@@ -1,6 +1,6 @@
-# Render Blueprint for the Apex API (Milestone 1).
-# Render dashboard -> New -> Blueprint -> pick this repo. Secrets marked
-# `sync: false` are prompted for in the dashboard and never stored in git.
+# Render Blueprint for the Apex API.
+# Render dashboard -> New -> Blueprint -> pick this repo. Values marked `sync: false`
+# are asked for in the dashboard and never stored in git.
 services:
   - type: web
     name: apex-api
@@ -10,7 +10,8 @@ services:
     # Pick the Render region closest to your Neon project's region.
     region: oregon
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    # Applies any new database migrations, then starts the API.
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -28,6 +29,6 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
-      # Your Vercel URL, e.g. https://apex-xyz.vercel.app (comma-separate several).
-      - key: CORS_ORIGINS
+      # Your Vercel URL, e.g. https://apex-xyz.vercel.app (no trailing slash).
+      - key: FRONTEND_URL
         sync: false

@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/product/[slug]">)
   const res = await getProduct(slug);
   return res.ok
     ? { title: res.data.title, description: res.data.description }
-    : { title: "Product" };
+    : { title: "Product not found" };
 }
 
 export default async function ProductPage({ params }: PageProps<"/product/[slug]">) {

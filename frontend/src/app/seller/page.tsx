@@ -10,7 +10,7 @@ import { apiGet } from "@/lib/api-server";
 import { requireSeller } from "@/lib/guards";
 import type { SellerOverview } from "@/types/api";
 
-export const metadata: Metadata = { title: "Overview" };
+export const metadata: Metadata = { title: { absolute: "Overview | Apex Seller" } };
 
 export default async function SellerOverviewPage() {
   await requireSeller("/seller");

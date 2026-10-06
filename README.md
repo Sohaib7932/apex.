@@ -1,76 +1,121 @@
 # Apex Marketplace
 
-An Amazon-style marketplace built from [PRD.md](PRD.md): Next.js frontend, FastAPI backend, Postgres on Neon, Stripe in test mode.
+An Amazon-style marketplace built from [PRD.md](PRD.md): browse, search, product pages, cart, Stripe checkout
+(test mode), order tracking, and a seller workspace.
 
 ```
-frontend/   Next.js 16 (App Router, Tailwind v4)        -> Vercel
-backend/    FastAPI + SQLAlchemy 2 + Alembic             -> Render
+frontend/   Next.js 16 (App Router, Tailwind v4)       -> Vercel
+backend/    FastAPI, SQLAlchemy 2, Alembic, Stripe       -> Render
 design/     reference screenshots
-docs/       milestone log (what changed, and why)
+docs/       milestones.md: what was built in each step, and every design change with the reason
 ```
+
+## Demo accounts
+
+Password for all of them: `ApexDemo2026!` (the sign-in page has one-click "Demo buyer" / "Demo seller" buttons).
+
+| Email | What it shows |
+|---|---|
+| `buyer@apex.demo` | A shopper with past orders, some shipped and some partly shipped |
+| `seller@apex.demo` | Owns **KeyForge Supply**: overview chart, products, orders to ship |
+| `northwind@apex.demo`, `official@apex.demo` | The other two demo stores |
+
+Promo codes: `APEX10`, `WELCOME15`, `SAVE20` (`SUMMER5` is expired, to show the error).
+Stripe test card: `4242 4242 4242 4242`, any future date, any CVC, any ZIP.
 
 ## Run locally
 
-Requirements: Node 20.9+, Python 3.12.
+You need Node 20.9+ and Python 3.12.
 
-### 1. Environment files
-
-```bash
-cp backend/.env.example backend/.env           # then fill in DATABASE_URL etc.
-cp frontend/.env.example frontend/.env.local
-```
-
-`.env` files are gitignored; never commit real values.
-
-### 2. Backend (http://localhost:8000)
+**1. Backend** (http://localhost:8000)
 
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate          # macOS/Linux: source .venv/bin/activate
+.venv\Scripts\activate              # macOS/Linux: source .venv/bin/activate
 pip install -r requirements-dev.txt
+cp .env.example .env                # fill in the values (see the table below)
+alembic upgrade head                # create the tables
+python seed.py                      # demo data (python seed.py --reset wipes and re-seeds)
 uvicorn app.main:app --reload --port 8000
 ```
 
-Check: http://localhost:8000/health returns `{"status":"ok","database":"ok",...}`. API docs: http://localhost:8000/api/v1/docs
-
-### 3. Frontend (http://localhost:3000)
-
-In a second terminal:
+**2. Frontend** (http://localhost:3000), in a second terminal
 
 ```bash
 cd frontend
 npm install
+cp .env.example .env.local          # API_URL=http://localhost:8000
 npm run dev
 ```
 
-The home page shows a live API and database status card. The browser calls `/api/...` on port 3000, and Next.js forwards it to `API_URL`.
+The browser only calls `/api/...` on port 3000; Next.js forwards those requests to `API_URL`.
 
-### Checks
+**Checks**
 
 ```bash
-cd backend  && ruff check . && ruff format --check . && pytest
+cd backend  && ruff check . && pytest          # DB tests use a throwaway schema in your database
 cd frontend && npm run lint && npm run typecheck && npm run build
 ```
 
 ## Deploy
 
-### API on Render
+Deploy the API first, then the frontend, then connect them.
 
-1. Push this repo to GitHub.
-2. Render → **New → Blueprint** → choose the repo. Render reads `render.yaml` and creates `apex-api` (root dir `backend/`).
-3. When prompted, set `DATABASE_URL` (Neon **pooled** string), `DATABASE_URL_UNPOOLED` (Neon direct string), and the Stripe keys (they can stay empty for now). Set `CORS_ORIGINS` to your Vercel URL; you can come back for that after step 2 of the Vercel section. `JWT_SECRET` is generated for you.
-4. Optional: in `render.yaml`, change `region` to the one nearest your Neon region.
-5. When the deploy is live, open `https://<your-service>.onrender.com/health`.
+**1. API on Render**
 
-Free Render instances sleep after 15 minutes idle, so the first request can take about 30–50 seconds.
+1. Push the repo to GitHub.
+2. In Render: **New > Blueprint**, then pick the repo. It reads `render.yaml` and creates `apex-api` from `backend/`.
+3. Fill in the variables it asks for (table below). `JWT_SECRET` is generated for you. Each start runs
+   `alembic upgrade head`, so the tables are created automatically.
+4. Seed the database once from your computer: `cd backend && python seed.py`, with `backend/.env` pointing
+   at the same Neon database. If you already seeded it locally, skip this.
+5. Open `https://<your-api>.onrender.com/health`. It should say `"database":"ok"`.
 
-### Frontend on Vercel
+**2. Frontend on Vercel**
 
-1. Vercel → **Add New → Project** → import the repo.
-2. Set **Root Directory** to `frontend`. Framework is detected as Next.js.
-3. Add the environment variable `API_URL=https://<your-service>.onrender.com` (no trailing slash).
-4. Deploy, then open the site. The status card should show API reachable and the database connected.
-5. Put the Vercel URL into Render's `CORS_ORIGINS` and redeploy the API.
+1. In Vercel: **Add New > Project**, then import the repo.
+2. Set **Root Directory** to `frontend` (Next.js is detected).
+3. Add `API_URL` = `https://<your-api>.onrender.com` (no trailing slash), then **Deploy**.
 
-`API_URL` is read when `next.config.ts` builds the `/api/*` rewrite, so redeploy Vercel after you change it.
+**3. Connect them**
+
+1. In Render, set `FRONTEND_URL` to your Vercel URL (e.g. `https://apex-xyz.vercel.app`) and redeploy.
+2. In Stripe (test mode): **Developers > Webhooks > Add endpoint**
+   - URL: `https://<your-api>.onrender.com/api/v1/webhooks/stripe`
+   - Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+     `checkout.session.async_payment_failed`, `checkout.session.expired`
+   - Copy the signing secret (`whsec_...`) into Render as `STRIPE_WEBHOOK_SECRET` and redeploy.
+
+Free Render services sleep after 15 minutes without traffic; the first request after that takes 30-60 seconds.
+Pages show a "Try again" button if the API is still waking up.
+
+## Environment variables
+
+**Render (backend)**
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | Neon **pooled** connection string (host contains `-pooler`) |
+| `DATABASE_URL_UNPOOLED` | Neon **direct** connection string (used for migrations) |
+| `JWT_SECRET` | Long random string (Render generates it) |
+| `STRIPE_SECRET_KEY` | Stripe test secret key, `sk_test_...` |
+| `STRIPE_WEBHOOK_SECRET` | From the Stripe webhook endpoint, `whsec_...` |
+| `FRONTEND_URL` | Your Vercel URL, used for Stripe redirects and CORS |
+| `ENVIRONMENT` | `production` (set by `render.yaml`; makes the session cookie Secure) |
+
+**Vercel (frontend)**
+
+| Variable | Value |
+|---|---|
+| `API_URL` | Your Render URL, e.g. `https://apex-api.onrender.com` |
+
+That's the only frontend variable: Stripe runs on its hosted checkout page, so no publishable key is needed.
+Both `.env.example` files list every variable. Never commit real values.
+
+## Local Stripe webhooks (optional)
+
+Locally, the success page asks the API to confirm the payment directly with Stripe, so orders turn **paid**
+without a webhook. To test the webhook itself, install the Stripe CLI and run
+`stripe listen --forward-to localhost:8000/api/v1/webhooks/stripe`. Put the `whsec_...` it prints in
+`backend/.env` as `STRIPE_WEBHOOK_SECRET`.
