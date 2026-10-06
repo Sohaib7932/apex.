@@ -21,13 +21,15 @@ const BADGE_LABELS: Record<string, string> = {
   "top-rated": "Top Rated",
 };
 
-function headline(state: SearchState, categories: Category[]): string {
+function headline(state: SearchState, categories: Category[], storeName?: string): string {
   if (state.q) return state.q;
   const parts: string[] = [];
   if (state.deals) parts.push("Today's Deals");
   if (state.badge) parts.push(BADGE_LABELS[state.badge] ?? "");
   if (state.category) parts.push(categories.find((c) => c.slug === state.category)?.name ?? "");
-  return parts.filter(Boolean).join(" in ");
+  const text = parts.filter(Boolean).join(" in ");
+  if (state.seller && storeName) return text ? `${text} from ${storeName}` : storeName;
+  return text;
 }
 
 export async function generateMetadata({ searchParams }: PageProps<"/search">): Promise<Metadata> {
@@ -38,7 +40,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/search">): 
 export default async function SearchPage({ searchParams }: PageProps<"/search">) {
   const state = parseSearch(await searchParams);
   const filterQuery = new URLSearchParams();
-  for (const key of ["q", "category", "deals", "badge"] as const) if (state[key]) filterQuery.set(key, state[key]);
+  for (const key of ["q", "category", "seller", "deals", "badge"] as const) if (state[key]) filterQuery.set(key, state[key]);
 
   const [results, filters, categories] = await Promise.all([
     apiGet<ProductPage>(`/products?${apiQuery(state)}`),
@@ -55,7 +57,8 @@ export default async function SearchPage({ searchParams }: PageProps<"/search">)
   }
 
   const page = results.data;
-  const label = headline(state, categories.ok ? categories.data : []);
+  const storeName = state.seller ? page.items[0]?.seller.name : undefined;
+  const label = headline(state, categories.ok ? categories.data : [], storeName);
   const activeCount =
     state.brand.length + state.facet.length + [state.min_price || state.max_price, state.min_rating, state.delivery, state.in_stock].filter(Boolean).length;
   let popular: ProductPage["items"] = [];

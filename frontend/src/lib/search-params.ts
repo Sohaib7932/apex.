@@ -6,6 +6,7 @@
 export type SearchState = {
   q: string;
   category: string;
+  seller: string;
   brand: string[];
   min_price: string;
   max_price: string;
@@ -42,6 +43,7 @@ export function parseSearch(raw: Raw): SearchState {
   return {
     q: first(raw.q).slice(0, 100),
     category: first(raw.category),
+    seller: first(raw.seller),
     brand: all(raw.brand),
     min_price: first(raw.min_price).replace(/\D/g, ""),
     max_price: first(raw.max_price).replace(/\D/g, ""),
@@ -64,6 +66,7 @@ export function apiQuery(s: SearchState): URLSearchParams {
   const set = (k: string, v: string | number) => v !== "" && v !== undefined && p.set(k, String(v));
   set("q", s.q);
   set("category", s.category);
+  set("seller", s.seller);
   s.brand.forEach((b) => p.append("brand", b));
   set("min_price", s.min_price);
   set("max_price", s.max_price);
@@ -85,6 +88,7 @@ export function searchHref(s: SearchState): string {
   const set = (k: string, v: string) => v && p.set(k, v);
   set("q", s.q);
   set("category", s.category);
+  set("seller", s.seller);
   s.brand.forEach((b) => p.append("brand", b));
   set("min_price", s.min_price);
   set("max_price", s.max_price);

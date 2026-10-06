@@ -12,6 +12,7 @@ from app.schemas.catalog import (
     DealsGrid,
     FeaturedBrand,
     HomePayload,
+    PlanOffer,
     ProductDetail,
     ProductPage,
     ProductSummary,
@@ -33,6 +34,7 @@ PAID_STATUSES = ("paid", "shipped", "delivered")
 def _params(
     q: str | None,
     category: str | None,
+    seller: str | None,
     brand: list[str] | None,
     min_price: int | None,
     max_price: int | None,
@@ -54,6 +56,7 @@ def _params(
     return svc.SearchParams(
         q=(q or "").strip()[:100] or None,
         category=category or None,
+        seller=seller or None,
         brands=[b for b in brand or [] if b],
         min_price=min_price,
         max_price=max_price,
@@ -74,6 +77,7 @@ def list_products(
     db: DB,
     q: Annotated[str | None, Query()] = None,
     category: Annotated[str | None, Query()] = None,
+    seller: Annotated[str | None, Query()] = None,
     brand: Annotated[list[str] | None, Query()] = None,
     min_price: Annotated[int | None, Query(ge=0)] = None,
     max_price: Annotated[int | None, Query(ge=0)] = None,
@@ -88,7 +92,7 @@ def list_products(
     per_page: Annotated[int, Query(ge=1, le=48)] = 16,
 ) -> ProductPage:
     params = _params(
-        q, category, brand, min_price, max_price, min_rating, delivery, in_stock, deals, badge, facet,
+        q, category, seller, brand, min_price, max_price, min_rating, delivery, in_stock, deals, badge, facet,
         sort, page, per_page,
     )  # fmt: skip
     rows, total = svc.search_products(db, params)
@@ -106,10 +110,13 @@ def search_filters(
     db: DB,
     q: Annotated[str | None, Query()] = None,
     category: Annotated[str | None, Query()] = None,
+    seller: Annotated[str | None, Query()] = None,
     deals: Annotated[str | None, Query()] = None,
     badge: Annotated[str | None, Query()] = None,
 ) -> SearchFilters:
-    params = _params(q, category, None, None, None, None, None, False, deals, badge, None, "featured", 1, 16)
+    params = _params(
+        q, category, seller, None, None, None, None, None, False, deals, badge, None, "featured", 1, 16
+    )
     return svc.search_filters(db, params)
 
 
@@ -138,9 +145,20 @@ def _published(db: DB, slug: str) -> Product:
     return product
 
 
+PLAN_SLUG = "apex-2-year-protection-plan"
+PLAN_MIN_PRICE_CENTS = 5000
+
+
 @router.get("/products/{slug}", response_model=ProductDetail)
 def product_detail(db: DB, slug: str) -> ProductDetail:
-    return svc.to_detail(db, _published(db, slug))
+    product = _published(db, slug)
+    detail = svc.to_detail(db, product)
+    # Offer the protection plan (a real product, priced on the server) on items over $50.
+    if product.slug != PLAN_SLUG and product.price_cents >= PLAN_MIN_PRICE_CENTS:
+        plan = db.scalar(select(Product).where(Product.slug == PLAN_SLUG, Product.status == "published"))
+        if plan:
+            detail.protection_plan = PlanOffer(id=plan.id, title=plan.title, price_cents=plan.price_cents)
+    return detail
 
 
 @router.get("/products/{slug}/related", response_model=RelatedOut)

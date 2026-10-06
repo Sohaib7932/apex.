@@ -34,7 +34,7 @@ type GuestLine = {
   selected: boolean;
 };
 
-type AddOptions = { variantId?: number | null; editionId?: number | null; quantity?: number };
+type AddOptions = { variantId?: number | null; editionId?: number | null; quantity?: number; silent?: boolean };
 
 type CartValue = {
   cart: Cart | null;
@@ -226,7 +226,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           ? () => api<Cart>(`/cart/items${promoQuery()}`, { method: "POST", body })
           : guestRun((lines) => [...lines, { ...body, saved_for_later: false, selected: true }]),
       );
-      if (ok) notify({ kind: "success", message: "Added to cart", action: { label: "View cart", href: "/cart" } });
+      if (ok && !options.silent) {
+        notify({ kind: "success", message: "Added to cart", action: { label: "View cart", href: "/cart" } });
+      }
       return ok;
     },
     [mutate, userId, guestRun, notify],

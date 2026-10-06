@@ -194,6 +194,7 @@ def _like(term: str) -> str:
 class SearchParams:
     q: str | None = None
     category: str | None = None
+    seller: str | None = None
     brands: list[str] = field(default_factory=list)
     min_price: int | None = None  # dollars
     max_price: int | None = None
@@ -225,6 +226,8 @@ def _base_conditions(db: Session, params: SearchParams) -> list:
     cat_ids = category_ids_for(db, params.category)
     if cat_ids is not None:
         conds.append(Product.category_id.in_(cat_ids or [-1]))
+    if params.seller:
+        conds.append(Product.seller_id.in_(select(Seller.id).where(Seller.slug == params.seller)))
     if params.deals:
         conds.append(Product.deal.has())
     if params.badge:

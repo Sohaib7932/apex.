@@ -76,6 +76,13 @@ class ProductDetail(ProductSummary):
     breadcrumbs: list[CategoryOut]
     rating_breakdown: dict[str, int]
     seller_detail: SellerDetail
+    protection_plan: "PlanOffer | None" = None
+
+
+class PlanOffer(BaseModel):
+    id: int
+    title: str
+    price_cents: int
 
 
 class ProductPage(BaseModel):
@@ -169,3 +176,6 @@ class HomePayload(BaseModel):
     flash_deals: list[ProductSummary]
     flash_deal_count: int
     featured_brand: FeaturedBrand | None
+
+
+ProductDetail.model_rebuild()

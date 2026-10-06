@@ -63,6 +63,7 @@ export type ProductDetail = ProductSummary & {
   breadcrumbs: Category[];
   rating_breakdown: Record<string, number>;
   seller_detail: SellerRef & { description: string; logo_url: string | null };
+  protection_plan: { id: number; title: string; price_cents: number } | null;
 };
 
 export type ProductPage = {

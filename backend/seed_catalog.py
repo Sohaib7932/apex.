@@ -36,6 +36,7 @@ CATEGORIES = [
     ("mice", "Mice", "computing", None, 0),
     ("storage", "Storage", "computing", None, 0),
     ("kitchen", "Kitchen", "home-kitchen", "coffee", 6),
+    ("services", "Protection Plans", None, None, 0),
 ]
 
 BLACK, SILVER, NAVY, SAND, WHITE = "#1f2328", "#cfd3d8", "#1e2a44", "#d8c3a5", "#f3f4f6"
@@ -1283,6 +1284,31 @@ PRODUCTS = [
         hl=["Titanium case, sapphire glass", "Dual-band GPS", "7 days of battery life"],
         specs={"Display": '1.9" AMOLED, always-on', "Water resistance": "5 ATM", "Battery": "Up to 7 days"},
         colors=[("Sage", "#c9d6c3", 0, 80), ("Graphite", BLACK, 0, 70)],
+    ),
+    # --------------------------------------------------------------- services
+    dict(
+        slug="apex-2-year-protection-plan",
+        store="apex",
+        brand="Apex",
+        cat="services",
+        title="Apex 2-Year Protection Plan",
+        price=19.99,
+        list=None,
+        rating=4.4,
+        count=3210,
+        bought=900,
+        stock=100000,
+        badges=[],
+        speed="one_day",
+        images=1,
+        desc="Covers accidental drops, spills, mechanical failure and 24/7 priority support for two years.",
+        hl=[
+            "Accidental damage from drops and spills",
+            "Mechanical and electrical failures",
+            "Fast replacement or repair",
+            "24/7 priority support",
+        ],
+        specs={"Term": "2 years", "Deductible": "None", "Cancel": "Full refund within 30 days"},
     ),
     # ------------------------------------------------------------------ drafts
     dict(

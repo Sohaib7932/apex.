@@ -117,3 +117,31 @@ in `frontend/src/app/globals.css` once the screenshot is available.
 | Filters open in a full-height drawer on phones and tablets, with "Show N results" | The sidebar doesn't fit at 390px. *(approved)* |
 | Results fade while a new filter loads; checkboxes update instantly | Visible feedback even on a slow connection. |
 | 40-44px rows for filter options and page numbers | Easy to tap. |
+
+## Milestone 5: Product page (2026-10-07)
+
+- Breadcrumbs; gallery with thumbnails and hover zoom (P1); "Visit the <store> Store" links to that store's
+  listings (`/search?seller=...`, new API filter); rating, "bought in past month" and a price box with
+  discount and typical list price.
+- Color swatches and edition cards. The edition changes the price and the color sets the stock shown.
+- Buy box: delivery date with an order-cutoff countdown, stock status, quantity, Add to Cart, Buy Now
+  (adds the item and goes to checkout), ships from / sold by (the real store) / returns / payment, and a
+  gift receipt option.
+- The 2-Year Protection Plan is a real catalog product ($19.99, "Protection Plans" category), added as its
+  own cart line, so its price comes from the server like everything else. It's offered on items over $50.
+- Key innovations, technical specs, about the seller.
+- Frequently bought together: the item plus two matching add-ons (headphones get a case and a stand),
+  each with a checkbox, a total, and "Add all 3 to Cart". No made-up bundle discount, so the cart
+  total matches.
+- Reviews: average, a breakdown by star (each bar filters the list), review search, sort, "Show more",
+  Helpful votes, Verified Purchase labels, and a review form for people who bought the product.
+- "Customers also viewed" carousel; viewed products feed "Keep shopping for" on the home page.
+- Loading skeleton; unknown products show the 404 page.
+
+**Design changes, with reasons**
+| Change | Why |
+|---|---|
+| On phones the buy box comes right after price and options; specs and innovations follow | The purchase controls are reachable without scrolling past the whole spec sheet. |
+| Buy box is sticky on desktop | Add to Cart stays in view while you read specs. |
+| Star bars filter the review list | The bars were display-only in the design; now they're useful. |
+| "Add to Apex Wishlist" left out | Wishlist is P1 and first on the PRD's cut list. A button that does nothing would be a dead control. |
