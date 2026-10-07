@@ -97,7 +97,14 @@ function isRealUserPrompt(e) {
   if (e.type !== "user" || e.isMeta || e.isSidechain) return false;
   const c = e.message?.content;
   if (Array.isArray(c) && c.some((b) => b.type === "tool_result")) return false;
-  return textOf(c).trim().length > 0;
+  const t = textOf(c).trim();
+  return t.length > 0 && !isSystemEvent(t) && !t.startsWith("[Request interrupted");
+}
+
+// Messages Claude Code injects as "user" turns (e.g. a background command finished).
+// They are logged as EVENT entries, never as the user's prompt.
+function isSystemEvent(text) {
+  return String(text).trimStart().startsWith("<task-notification>");
 }
 
 function lastModel(entries) {
@@ -183,7 +190,21 @@ function entry(type, num, timestamp, model, body) {
   return `\n[LOG_ENTRY type=${type} num=${num} session=${shortId}]\ntimestamp: ${timestamp}\nmodel: ${model}\n\n${body}\n\n`;
 }
 
-const ENTRY_RE = new RegExp(`^\\[LOG_ENTRY type=(PROMPT|RESPONSE) num=(\\d+) session=${shortId}\\]$`, "gm");
+const ENTRY_RE = new RegExp(`^\\[LOG_ENTRY type=([A-Z]+) num=(\\d+) session=${shortId}\\]$`, "gm");
+
+// Logs are always handled as LF: git on Windows may check them out as CRLF, which
+// once broke header parsing (duplicated headers) and prompt de-duplication.
+function readLog(file) {
+  return fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+}
+
+function lastResponse(text) {
+  const re = new RegExp(
+    `^\\[LOG_ENTRY type=RESPONSE num=(\\d+) session=${shortId}\\]\\ntimestamp: .*\\nmodel: .*\\n\\n([\\s\\S]*?)\\n\\n(?=\\n\\[LOG_ENTRY|$)`,
+    "gm"
+  );
+  return [...text.matchAll(re)].pop() || null;
+}
 
 // Append an entry and refresh the frontmatter. Entries already written are kept byte-for-byte.
 function append(type, timestamp, model, body) {
@@ -192,7 +213,7 @@ function append(type, timestamp, model, body) {
   let existingBody = "";
   let first = null;
   if (file) {
-    const raw = fs.readFileSync(file, "utf8");
+    const raw = readLog(file);
     const fm = raw.match(/^---\n[\s\S]*?\n---\n/);
     first = raw.match(/^first_prompt_time: (.*)$/m)?.[1] || null;
     // Body = everything after the "Session: ... \n\n---\n" banner.
@@ -208,7 +229,16 @@ function append(type, timestamp, model, body) {
   const prompts = kinds.filter((m) => m[1] === "PROMPT");
   const lastKind = kinds.length ? kinds[kinds.length - 1][1] : null;
   const promptCount = prompts.length + (type === "PROMPT" ? 1 : 0);
+  // Prompts are numbered 1..n; responses and events carry the number of the prompt they belong to.
   const num = Math.max(promptCount, 1);
+
+  // A Stop after a background task can repeat the turn's final answer; don't log it twice.
+  if (type === "RESPONSE") {
+    const prev = lastResponse(existingBody);
+    if (prev && Number(prev[1]) === num && prev[2].trim() === String(body).trim()) {
+      return { file, lastKind, skipped: true };
+    }
+  }
 
   const promptTimes = loggedPromptTimes(existingBody);
   if (type === "PROMPT") promptTimes.push(timestamp);
@@ -243,8 +273,17 @@ function promptMissing(userEntry) {
   if (!userEntry) return false;
   const file = findLogFile();
   if (!file) return true;
-  const times = loggedPromptTimes(fs.readFileSync(file, "utf8"));
+  const log = readLog(file);
+  const times = loggedPromptTimes(log);
   if (!times.length) return true;
+  // Same text as the last logged prompt: it was logged (clock skew alone must not duplicate it).
+  const promptRe = new RegExp(
+    `^\\[LOG_ENTRY type=PROMPT num=\\d+ session=${shortId}\\]\\ntimestamp: .*\\nmodel: .*\\n\\n([\\s\\S]*?)\\n\\n(?=\\n\\[LOG_ENTRY|$)`,
+    "gm"
+  );
+  const lastText = [...log.matchAll(promptRe)].pop()?.[1] ?? "";
+  const squash = (t) => String(t).replace(/<!--[\s\S]*?-->/g, "").replace(/\s+/g, " ").trim();
+  if (squash(lastText) === squash(textOf(userEntry.message?.content))) return false;
   const lastLogged = Date.parse(times[times.length - 1]);
   const userTs = Date.parse(userEntry.timestamp);
   // The hook stamps its own clock; allow a few seconds of skew against the transcript.
@@ -260,7 +299,8 @@ try {
     // Headless (-p) sessions don't pass a model to SessionStart, so the first
     // prompt there is labelled "unknown"; the RESPONSE carries the real model.
     const model = lastModel(readTranscript()) || readState().model || "unknown";
-    append("PROMPT", new Date().toISOString(), model, input.prompt ?? "");
+    const prompt = input.prompt ?? "";
+    append(isSystemEvent(prompt) ? "EVENT" : "PROMPT", new Date().toISOString(), model, prompt);
   } else if (event === "stop") {
     const entries = readTranscript();
     const fromTranscript = finalResponseFromTranscript(entries);

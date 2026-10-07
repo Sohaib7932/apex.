@@ -1,0 +1,3 @@
+# Agent logs are parsed by .claude/hooks/agent-capture.mjs; keep them LF on every OS.
+.agent-logs/** text eol=lf
+.claude/hooks/** text eol=lf

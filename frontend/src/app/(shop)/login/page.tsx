@@ -14,7 +14,13 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <AuthCard
       title="Sign in"
-      subtitle={next.startsWith("/checkout") ? "Sign in to finish checking out. Your cart is saved." : "Welcome back to Apex."}
+      subtitle={
+        next.startsWith("/seller")
+          ? "Sign in to sell on Apex. New here? Create a free account below, then open your store."
+          : next.startsWith("/checkout")
+            ? "Sign in to finish checking out. Your cart is saved."
+            : "Welcome back to Apex."
+      }
     >
       <AuthForm mode="login" next={next} />
     </AuthCard>

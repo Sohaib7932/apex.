@@ -32,10 +32,11 @@ export function DeliverTo() {
   );
 }
 
+/** Always shown, for guests too; Buying is the default state. */
 export function HeaderModeSwitch({ className = "" }: { className?: string }) {
   const { user } = useAuth();
-  if (!user) return null;
-  return <ModeSwitch hasStore={user.seller !== null} className={className} />;
+  const account = user === null ? "guest" : user.seller ? "seller" : "buyer";
+  return <ModeSwitch account={account} className={className} />;
 }
 
 export function OrdersLink() {

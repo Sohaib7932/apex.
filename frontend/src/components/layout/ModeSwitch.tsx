@@ -7,22 +7,30 @@ import { usePathname } from "next/navigation";
 type Mode = "buying" | "selling";
 
 type Props = {
-  /** Whether the signed-in user already owns a store. */
-  hasStore: boolean;
+  /** guest: signed out; buyer: signed in without a store; seller: owns a store. */
+  account: "guest" | "buyer" | "seller";
   className?: string;
 };
 
+/** Where "Selling" leads for each kind of visitor. */
+export const SELLING_HREF = {
+  // Sign in first, then /seller sends people without a store on to /seller/start.
+  guest: "/login?next=%2Fseller",
+  buyer: "/seller/start",
+  seller: "/seller",
+} as const;
+
 /**
- * Buying/Selling switch (PRD 4.1). Rendered for signed-in users only.
- * Selling goes to the seller workspace, or to onboarding if there is no store yet.
+ * Buying/Selling switch (PRD 4.1), shown to everyone; Buying is the default.
+ * The active side follows the URL: any /seller page is Selling, everything else Buying.
  *
  * On the black header: a dark pill track; the active side is a deep orange fill with
  * white text (4.8:1), the inactive side light gray text (8:1 on the track).
  */
-export function ModeSwitch({ hasStore, className = "" }: Props) {
+export function ModeSwitch({ account, className = "" }: Props) {
   const pathname = usePathname();
-  const active: Mode = pathname.startsWith("/seller") ? "selling" : "buying";
-  const sellingHref = hasStore ? "/seller" : "/seller/start";
+  const active: Mode = pathname === "/seller" || pathname.startsWith("/seller/") ? "selling" : "buying";
+  const sellingHref = SELLING_HREF[account];
 
   const segment = (mode: Mode) =>
     `inline-flex min-h-11 items-center gap-1.5 rounded-pill px-4 text-xs font-bold uppercase tracking-wide transition-colors lg:min-h-9 lg:px-3.5 ${

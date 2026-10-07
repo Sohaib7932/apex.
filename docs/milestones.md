@@ -341,3 +341,35 @@ The API and migrations use the same branch (pooled and direct endpoints of ep-sn
 - New tests (`tests/test_signup_persistence.py`): sign up, then read the user back in a brand-new database
   session and sign in from a brand-new HTTP client; the reset guard refuses and leaves a real user
   untouched; demo accounts don't count as real users. Backend 31/31 pass.
+
+## Agent logs repaired, and the Buying/Selling switch for everyone (2026-10-07)
+
+**Agent logs (`.agent-logs/`, `.claude/hooks/agent-capture.mjs`)**
+- Problems found: Git on Windows had checked the logs out with CRLF line endings, and the hook only
+  parsed LF. It then wrote a second frontmatter and title into a log and logged one prompt twice.
+  Background-task notifications (`<task-notification>`) were recorded as user prompts, so final answers
+  were numbered against a notification and real prompts looked unanswered.
+- Hook fixes: logs are read as LF and always written as LF; notifications are logged as
+  `type=EVENT` entries, not prompts; responses and events take the number of the prompt they belong to;
+  a repeated final answer after a background task isn't logged twice; the "missing prompt" recovery
+  compares the prompt text as well as the time. `.gitattributes` keeps `.agent-logs/` and the hook LF on every OS.
+- One-off repair of the existing logs (structure only, entry text kept verbatim): a single header per
+  file, notifications relabelled as EVENT, the duplicate prompt removed, entries renumbered. Answers that
+  were never captured were recovered from the session transcripts and marked
+  `<!-- response recovered from the session transcript during log repair -->`. Interrupted turns get a
+  `type=NOTE` entry. Every log was scanned for secrets before and after: none.
+
+**Buying/Selling switch**
+- Shown in the header on every page, for everyone (signed out too), on desktop and mobile. Buying is the
+  default; the Selling side is active on any `/seller` page.
+- Selling goes to: signed out → `/login?next=/seller` (the sign-in page explains it and links to
+  sign-up, keeping the return path); signed in without a store → `/seller/start`; store owner → `/seller`.
+  After signing in, `/seller` sends people without a store to `/seller/start`.
+- New `frontend/src/proxy.ts` (Next 16's replacement for middleware): any `/seller` URL without a session
+  cookie redirects to sign-in and comes back to the same path and query. Each seller page still checks
+  the session and the store on the server.
+- Browser-tested at 390, 820 and 1440px (and 1024px for the header): the guest's switch goes to sign-in;
+  the demo seller returns to `/seller`; the demo buyer (no store) lands on `/seller/start`;
+  `/seller/orders?status=to_ship` round-trips through sign-in; sign-up from the Selling flow ends on
+  `/seller/start`; the switch shows the right side on every page. 81-page sweep: no sideways scrolling,
+  no console errors.

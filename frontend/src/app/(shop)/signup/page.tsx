@@ -12,7 +12,14 @@ export default async function SignupPage({ searchParams }: PageProps<"/signup">)
   const next = safeNext((await searchParams).next);
   if (await getSessionUser()) redirect(next);
   return (
-    <AuthCard title="Create account" subtitle="It takes less than a minute. Anything in your cart comes with you.">
+    <AuthCard
+      title="Create account"
+      subtitle={
+        next.startsWith("/seller")
+          ? "Create your account first; next you'll name your store and start selling."
+          : "It takes less than a minute. Anything in your cart comes with you."
+      }
+    >
       <AuthForm mode="signup" next={next} />
     </AuthCard>
   );
