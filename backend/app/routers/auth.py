@@ -1,31 +1,35 @@
-import time
-from collections import defaultdict, deque
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel, EmailStr, Field
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 
 from app.core.deps import DB, CurrentUser
 from app.core.security import clear_session_cookie, hash_password, set_session_cookie, verify_password
-from app.models import Seller, User
+from app.models import LoginAttempt, Seller, User
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# Simple in-process limiter for login attempts (PRD 7, P1): 10 tries per 5 minutes per IP+email.
-_WINDOW_SECONDS = 300
+# Login limit (PRD 7, P1): 10 failed tries per 5 minutes per IP+email. Kept in Postgres, not
+# memory, because serverless instances come and go and do not share state.
+_WINDOW = timedelta(minutes=5)
 _MAX_ATTEMPTS = 10
-_attempts: dict[str, deque[float]] = defaultdict(deque)
 
 
-def _rate_limited(key: str) -> bool:
-    now = time.monotonic()
-    q = _attempts[key]
-    while q and now - q[0] > _WINDOW_SECONDS:
-        q.popleft()
-    if len(q) >= _MAX_ATTEMPTS:
-        return True
-    q.append(now)
-    return False
+def _rate_limited(db: DB, key: str) -> bool:
+    since = datetime.now(UTC) - _WINDOW
+    # Expired rows are useless; clear them as we go so the table stays tiny.
+    db.execute(delete(LoginAttempt).where(LoginAttempt.attempted_at < since))
+    recent = db.scalar(
+        select(func.count(LoginAttempt.id)).where(LoginAttempt.key == key, LoginAttempt.attempted_at >= since)
+    )
+    db.commit()
+    return (recent or 0) >= _MAX_ATTEMPTS
+
+
+def _record_failure(db: DB, key: str) -> None:
+    db.add(LoginAttempt(key=key[:320]))
+    db.commit()
 
 
 class SellerBrief(BaseModel):
@@ -88,13 +92,17 @@ def signup(db: DB, body: SignupIn, response: Response) -> UserOut:
 def login(db: DB, body: LoginIn, request: Request, response: Response) -> UserOut:
     email = body.email.lower()
     client = request.headers.get("x-forwarded-for", request.client.host if request.client else "?")
-    if _rate_limited(f"{client.split(',')[0].strip()}|{email}"):
+    key = f"{client.split(',')[0].strip()}|{email}"[:320]
+    if _rate_limited(db, key):
         raise HTTPException(
             status.HTTP_429_TOO_MANY_REQUESTS, "Too many sign-in attempts. Please wait a few minutes."
         )
     user = db.scalar(select(User).where(User.email == email))
     if user is None or not verify_password(user.password_hash, body.password):
+        _record_failure(db, key)
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password.")
+    db.execute(delete(LoginAttempt).where(LoginAttempt.key == key))
+    db.commit()
     set_session_cookie(response, user.id)
     return user_out(db, user)
 

@@ -1,10 +1,12 @@
+# Render and local runs: the runtime list in pyproject.toml plus the server and migrations.
+# Keep the shared lines in step with pyproject.toml, which is what Vercel installs.
 fastapi==0.118.*
-uvicorn[standard]==0.37.*
 sqlalchemy==2.0.*
 psycopg[binary]==3.2.*
-alembic==1.16.*
 pydantic-settings==2.11.*
 argon2-cffi==25.1.*
 PyJWT==2.10.*
 stripe==13.*
 email-validator==2.3.*
+uvicorn[standard]==0.37.*
+alembic==1.16.*

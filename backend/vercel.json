@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": [
+    "cle1"
+  ],
+  "functions": {
+    "app/main.py": {
+      "excludeFiles": "{tests/**,alembic/**,alembic.ini,seed.py,seed_catalog.py,requirements*.txt,.venv/**,**/__pycache__/**,.pytest_cache/**,.ruff_cache/**,.env*,.claude/**}"
+    }
+  }
+}

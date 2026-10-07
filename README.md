@@ -5,7 +5,7 @@ An Amazon-style marketplace built from [PRD.md](PRD.md): browse, search, product
 
 ```
 frontend/   Next.js 16 (App Router, Tailwind v4)       -> Vercel
-backend/    FastAPI, SQLAlchemy 2, Alembic, Stripe       -> Render
+backend/    FastAPI, SQLAlchemy 2, Alembic, Stripe       -> Vercel (or Render)
 design/     reference screenshots
 docs/       milestones.md: what was built in each step, and every design change with the reason
 ```
@@ -97,6 +97,57 @@ Deploy the API first, then the frontend, then connect them.
 
 Free Render services sleep after 15 minutes without traffic; the first request after that takes 30-60 seconds.
 Pages show a "Try again" button if the API is still waking up.
+
+## Deploy backend on Vercel
+
+Use this instead of Render if you'd rather not add a card: the API runs as Vercel Functions on the free
+(Hobby) plan, in a **second** Vercel project next to the frontend.
+
+**What's already set up in `backend/`**
+
+- `pyproject.toml` lists the runtime dependencies (Vercel installs from it, not from `requirements.txt`),
+  sets Python 3.12 (also in `.python-version`) and points Vercel at `app.main:app`.
+- `vercel.json` runs the function in `cle1` (Cleveland, next to Neon's `us-east-2`) and leaves tests,
+  migrations, seed scripts and dev files out of the bundle. The install is about 85 MB (the limit is 250 MB).
+- On Vercel the API opens one database connection per request and closes it after (Neon's pooler does the
+  pooling), and stores failed sign-ins in Postgres, so nothing depends on memory or local disk.
+- Nothing runs migrations or the seed on deploy.
+
+**Steps**
+
+1. **Apply the migrations once, from your computer**, before the first deploy. The `login_attempts` table is
+   new, so run this even if the database is already set up:
+   ```bash
+   cd backend && alembic upgrade head      # uses DATABASE_URL_UNPOOLED from backend/.env
+   ```
+   Seed only if the database is empty (`python seed.py`).
+2. In Vercel: **Add New > Project**, import the same repo, and set **Root Directory** to `backend`.
+   Leave Framework Preset as detected (FastAPI) and the build settings empty.
+3. Add the environment variables below (Production and Preview), then **Deploy**.
+4. Open `https://<your-api>.vercel.app/health`. It should say `"database":"ok"`.
+5. In the **frontend** project, set `API_URL` = `https://<your-api>.vercel.app` (no trailing slash) and redeploy.
+6. In Stripe (test mode): **Developers > Webhooks > Add endpoint**
+   - URL: `https://<your-api>.vercel.app/api/v1/webhooks/stripe`
+   - Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+     `checkout.session.async_payment_failed`, `checkout.session.expired`
+   - Copy the signing secret into the backend project as `STRIPE_WEBHOOK_SECRET` and redeploy.
+
+**Backend project variables**
+
+| Variable | Required | Value |
+|---|---|---|
+| `DATABASE_URL` | yes | Neon **pooled** connection string (host contains `-pooler`) |
+| `JWT_SECRET` | yes | Long random string, e.g. `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `STRIPE_SECRET_KEY` | yes | Stripe test secret key, `sk_test_...` |
+| `STRIPE_WEBHOOK_SECRET` | yes | From the Stripe webhook endpoint in step 6, `whsec_...` |
+| `FRONTEND_URL` | yes | Your frontend URL, e.g. `https://apex-xyz.vercel.app` (no trailing slash). Used for Stripe redirects and CORS |
+| `ENVIRONMENT` | yes | `production` (makes the session cookie Secure) |
+| `CORS_ORIGINS` | no | Comma-separated extra origins, only if the API must answer more than `FRONTEND_URL` (it replaces it) |
+| `DATABASE_URL_UNPOOLED` | no | Neon **direct** string. Only migrations use it, and they run from your computer, so it can be left out |
+
+`VERCEL` is set by Vercel itself; the API uses it to switch to one connection per request.
+Vercel deployment protection is off for production URLs by default; if you turn it on, Stripe's webhook calls
+will be blocked.
 
 ## Environment variables
 

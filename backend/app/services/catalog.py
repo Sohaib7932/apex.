@@ -159,6 +159,8 @@ def to_detail(db: Session, p: Product) -> ProductDetail:
     )
 
 
+# Read-through cache of the category tree. Per instance only and never required: a cold
+# serverless instance simply reads the tree from Postgres again.
 _TREE_TTL = 60.0
 _tree_cache: tuple[float, dict[str, list[int]]] | None = None
 

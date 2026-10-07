@@ -1,0 +1,11 @@
+# Keep local and dev-only files out of the Vercel upload (the function bundle is trimmed
+# further by excludeFiles in vercel.json).
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.env
+.env.*
+!.env.example
+.claude/
+tests/

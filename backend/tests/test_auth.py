@@ -43,3 +43,36 @@ def test_validation_errors_are_one_readable_sentence(db, make_client):
         "/api/v1/auth/signup", json={"name": "A B", "email": "ok@example.com", "password": "short"}
     )
     assert res.json()["detail"] == "Use at least 8 characters for your password."
+
+
+def test_login_limit_is_kept_in_the_database(db, make_client):
+    """Serverless instances share nothing in memory, so failed tries must live in Postgres."""
+    from sqlalchemy import func, select
+
+    from app.models import LoginAttempt
+
+    signup(make_client(), "limit@example.com")
+    bad = {"email": "limit@example.com", "password": "wrong-pass"}
+    for _ in range(10):
+        # A fresh client each time stands in for a fresh function instance.
+        assert make_client().post("/api/v1/auth/login", json=bad).status_code == 401
+    assert db.scalar(select(func.count(LoginAttempt.id))) == 10
+
+    res = make_client().post("/api/v1/auth/login", json={**bad, "password": "password123"})
+    assert res.status_code == 429
+    assert "Too many sign-in attempts" in res.json()["detail"]
+
+
+def test_successful_login_clears_failed_tries(db, make_client):
+    from sqlalchemy import func, select
+
+    from app.models import LoginAttempt
+
+    signup(make_client(), "clear@example.com")
+    for _ in range(3):
+        make_client().post("/api/v1/auth/login", json={"email": "clear@example.com", "password": "nope-nope"})
+    good = {"email": "clear@example.com", "password": "password123"}
+    ok = make_client().post("/api/v1/auth/login", json=good)
+    assert ok.status_code == 200
+    db.expire_all()
+    assert db.scalar(select(func.count(LoginAttempt.id))) == 0

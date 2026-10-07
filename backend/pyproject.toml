@@ -2,6 +2,24 @@
 name = "apex-backend"
 version = "0.1.0"
 requires-python = ">=3.12"
+# Runtime dependencies only. Vercel installs from this list (it prefers pyproject.toml over
+# requirements.txt), so it must stay complete. Keep it in step with requirements.txt.
+# Not here on purpose: uvicorn and alembic (Render and local only; Vercel runs the ASGI app
+# itself and migrations never run on deploy) and the dev tools in requirements-dev.txt.
+dependencies = [
+    "fastapi==0.118.*",
+    "sqlalchemy==2.0.*",
+    "psycopg[binary]==3.2.*",
+    "pydantic-settings==2.11.*",
+    "argon2-cffi==25.1.*",
+    "PyJWT==2.10.*",
+    "stripe==13.*",
+    "email-validator==2.3.*",
+]
+
+[tool.vercel]
+# Vercel would also find this on its own (app/main.py); pinned so a rename cannot break it.
+entrypoint = "app.main:app"
 
 [tool.ruff]
 line-length = 110

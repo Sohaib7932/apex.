@@ -307,3 +307,15 @@ class OrderItem(Base):
     shipped_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     order: Mapped[Order] = relationship(back_populates="items")
+
+
+class LoginAttempt(Base):
+    """Failed sign-ins, so the login limit holds across serverless instances (PRD 7)."""
+
+    __tablename__ = "login_attempts"
+    __table_args__ = (Index("ix_login_attempts_key_at", "key", "attempted_at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    # "<client ip>|<email>", the same key the limiter used in memory before.
+    key: Mapped[str] = mapped_column(String(320))
+    attempted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
