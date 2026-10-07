@@ -25,6 +25,7 @@ function baseUrl(): string | null {
 export async function apiGet<T>(path: string, options: Options = {}): Promise<ApiResult<T>> {
   const base = baseUrl();
   if (!base) {
+    console.error("[apex] API_URL is not set; cannot call the API.");
     return { ok: false, status: 500, message: "API_URL is not configured." };
   }
   const headers: Record<string, string> = { accept: "application/json" };
@@ -53,10 +54,13 @@ export async function apiGet<T>(path: string, options: Options = {}): Promise<Ap
       } catch {
         /* non-JSON error body */
       }
+      if (res.status >= 500) console.error(`[apex] API ${res.status} for ${path.split("?")[0]}`);
       return { ok: false, status: res.status, message };
     }
     return { ok: true, data: (await res.json()) as T };
-  } catch {
+  } catch (e) {
+    // Logged (path and error type only, never cookies or bodies) so an unreachable API isn't silent.
+    console.error(`[apex] API unreachable for ${path.split("?")[0]}: ${e instanceof Error ? e.name : "error"}`);
     return { ok: false, status: 503, message: "We couldn't reach the store right now." };
   }
 }

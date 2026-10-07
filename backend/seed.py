@@ -1,7 +1,8 @@
 """Seed the database with the Apex demo catalog, stores, users, reviews and orders.
 
-    python seed.py            # seeds an empty database; refuses if demo data exists
-    python seed.py --reset    # wipes ALL data and re-seeds (demo/dev databases only)
+    python seed.py                              # seeds an empty database; refuses if demo data exists
+    python seed.py --reset                      # wipes and re-seeds, but REFUSES if real users exist
+    python seed.py --reset --wipe-real-users    # also deletes real sign-ups and their orders (dev only)
 
 Demo logins (password for all: ApexDemo2026!):
     buyer@apex.demo       shopper with past orders
@@ -15,7 +16,7 @@ import secrets
 import sys
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select, text
+from sqlalchemy import func, not_, select, text
 from sqlalchemy.orm import Session
 
 from app.core.db import get_engine
@@ -39,6 +40,8 @@ from app.services import pricing
 from seed_catalog import CATEGORIES, PRODUCTS, PROMO_CODES, REVIEWERS, REVIEWS, STORES
 
 DEMO_PASSWORD = "ApexDemo2026!"
+# Accounts created by this script. Anything else is a real sign-up and is never wiped silently.
+DEMO_EMAIL_DOMAINS = ("@apex.demo", "@reviewers.apex.demo")
 TABLES = (
     "order_items, orders, reviews, cart_items, wishlist_items, deals, product_variants, product_images, "
     "products, brands, categories, promo_codes, addresses, sellers, users"
@@ -323,14 +326,30 @@ def seed(db: Session) -> None:
     db.commit()
 
 
-def main() -> None:
-    reset = "--reset" in sys.argv
+def real_user_count(db: Session) -> int:
+    """Users that did not come from this script (people who signed up)."""
+    demo = [User.email.like(f"%{domain}") for domain in DEMO_EMAIL_DOMAINS]
+    return db.scalar(select(func.count(User.id)).where(*(not_(cond) for cond in demo))) or 0
+
+
+def main(argv: list[str] | None = None) -> None:
+    argv = sys.argv[1:] if argv is None else argv
+    reset = "--reset" in argv
     with Session(get_engine()) as db:
         exists = db.scalar(select(User.id).where(User.email == "seller@apex.demo"))
         if exists and not reset:
             print("Demo data already exists. Run `python seed.py --reset` to wipe and re-seed.")
             return
         if reset:
+            real = real_user_count(db)
+            if real and "--wipe-real-users" not in argv:
+                # --reset truncates every table; never delete real sign-ups by accident.
+                print(
+                    f"Refusing to reset: {real} real (non-demo) user account(s) exist and would be deleted."
+                )
+                print("Their accounts and orders would be lost. If you really want that, run:")
+                print("    python seed.py --reset --wipe-real-users")
+                raise SystemExit(1)
             db.execute(text(f"TRUNCATE {TABLES} RESTART IDENTITY CASCADE"))
             db.commit()
         seed(db)

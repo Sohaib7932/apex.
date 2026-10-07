@@ -319,3 +319,25 @@ Visual changes only: no behavior, API, database or route changes.
   reserves space for the bottom tab bar when it's shown.
 - **Checked:** no text below 12px, no hard-coded colors (except product color swatches, which are data).
   81 page loads at 390, 820 and 1440px: no sideways scrolling and no console errors.
+
+## Fix: sign-ups disappearing from Neon (2026-10-07)
+
+**What happened:** sign-up was always saved. Tested with a fresh email through the API and through the
+Next.js proxy; the row was committed and readable over both the pooled and the direct connection.
+The rows were later deleted by `python seed.py --reset`, which runs `TRUNCATE ... RESTART IDENTITY CASCADE`
+on every table, `users` included. It was run after test sessions to restore clean demo data, so it
+removed every real account and restarted the ids. That's why `users` only held ids 1-21 (20 demo
+accounts plus one test).
+
+**Where the API writes:** Neon project `apex` (purple-union-09866071), branch `production`
+(br-dry-sea-b5yl1dnn, the only and default branch), database `neondb`, schema `public`, table `users`.
+The API and migrations use the same branch (pooled and direct endpoints of ep-snowy-tooth-b54ecc8s).
+
+**Fixes**
+- `seed.py --reset` refuses (exit code 1) while any non-demo user exists, and prints how many would be lost.
+  Wiping them now needs an explicit `--wipe-real-users`.
+- The frontend server logs failed or unreachable API calls (path and error type only, no cookies or
+  bodies) instead of failing silently into an empty session or error state.
+- New tests (`tests/test_signup_persistence.py`): sign up, then read the user back in a brand-new database
+  session and sign in from a brand-new HTTP client; the reset guard refuses and leaves a real user
+  untouched; demo accounts don't count as real users. Backend 31/31 pass.

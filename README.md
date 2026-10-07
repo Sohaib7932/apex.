@@ -44,7 +44,7 @@ python -m venv .venv
 pip install -r requirements-dev.txt
 cp .env.example .env                # fill in the values (see the table below)
 alembic upgrade head                # create the tables
-python seed.py                      # demo data (python seed.py --reset wipes and re-seeds)
+python seed.py                      # demo data (see "Where the data lives" below about --reset)
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -127,3 +127,13 @@ Locally, the success page asks the API to confirm the payment directly with Stri
 without a webhook. To test the webhook itself, install the Stripe CLI and run
 `stripe listen --forward-to localhost:8000/api/v1/webhooks/stripe`. Put the `whsec_...` it prints in
 `backend/.env` as `STRIPE_WEBHOOK_SECRET`.
+
+## Where the data lives
+
+The API stores everything in Neon project **apex**, branch **production** (the default branch), database
+**neondb**, schema **public**. Users are in the `users` table. In the Neon console: Tables, then
+`public.users`, or SQL Editor: `select id, name, email, created_at from users order by id desc;`
+
+`python seed.py --reset` empties every table and re-seeds the demo. It refuses to run while real sign-ups
+exist (any email outside `@apex.demo` / `@reviewers.apex.demo`), because they would be deleted. To delete
+them anyway on a dev database: `python seed.py --reset --wipe-real-users`.
