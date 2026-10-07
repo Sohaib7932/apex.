@@ -4,6 +4,7 @@
   "private": true,
   "description": "Repo-level tooling only (Neon CLI config in neon.ts). The web app lives in frontend/, the API in backend/.",
   "scripts": {
+    "dev": "node scripts/dev.mjs",
     "dev:frontend": "npm --prefix frontend run dev",
     "build:frontend": "npm --prefix frontend run build",
     "lint:frontend": "npm --prefix frontend run lint"

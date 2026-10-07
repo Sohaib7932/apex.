@@ -25,7 +25,15 @@ Stripe test card: `4242 4242 4242 4242`, any future date, any CVC, any ZIP.
 
 ## Run locally
 
-You need Node 20.9+ and Python 3.12.
+You need Node 20.9+ and Python 3.12. Do the one-time setup in steps 1 and 2, then start
+**both** apps with one command from the repo root:
+
+```bash
+npm run dev        # API on :8000 + web on :3000, Ctrl+C stops both
+```
+
+The web app needs the API: if only the frontend is running, pages show "We couldn't reach the store"
+and the terminal prints `ECONNREFUSED ... :8000`.
 
 **1. Backend** (http://localhost:8000)
 

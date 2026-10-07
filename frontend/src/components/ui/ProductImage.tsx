@@ -43,7 +43,8 @@ export function ProductImage({
         alt={alt}
         fill
         sizes={sizes}
-        priority={priority}
+        loading={priority ? "eager" : undefined}
+        fetchPriority={priority ? "high" : undefined}
         unoptimized={!canOptimize(src)}
         className={fit === "cover" ? "object-cover" : "object-contain"}
       />
