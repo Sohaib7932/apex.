@@ -3,6 +3,9 @@
 Unit tests need nothing. Database tests run in a throwaway Postgres schema
 (`test_<random>`) on TEST_DATABASE_URL, or on the direct Neon URL from backend/.env,
 and the schema is dropped afterwards. With no database available they are skipped.
+
+The schema is built by running the Alembic migrations, not create_all(), so a model
+change that ships without its migration fails the tests instead of failing in production.
 """
 
 import os
@@ -18,10 +21,12 @@ if not os.environ.get("DATABASE_URL") and not (BACKEND / ".env").exists():
 os.environ.setdefault("JWT_SECRET", "test-only-jwt-secret-0123456789abcdef")
 os.environ["ENVIRONMENT"] = "test"
 
+from alembic.config import Config  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import create_engine, text  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
+from alembic import command  # noqa: E402
 from app.core.config import _to_psycopg_url, get_settings  # noqa: E402
 from app.core.db import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
@@ -39,6 +44,15 @@ def _test_db_url() -> str | None:
 
 
 _state: dict[str, str] = {}
+
+
+def alembic_config(conn, schema: str) -> Config:
+    """Alembic config that migrates `conn` (search_path = the test schema) and nothing else."""
+    cfg = Config(str(BACKEND / "alembic.ini"))
+    cfg.set_main_option("script_location", str(BACKEND / "alembic"))
+    cfg.attributes["connection"] = conn
+    cfg.attributes["version_table_schema"] = schema
+    return cfg
 
 
 @pytest.fixture(scope="session")
@@ -62,18 +76,25 @@ def engine():
     eng = create_engine(
         url, connect_args={"options": f"-csearch_path={schema},public", "connect_timeout": 15}
     )
-    # checkfirst=False: the existence check would find the real tables in `public`
-    # and skip creating them here. CREATE TABLE goes to the first schema on the path.
-    Base.metadata.create_all(eng, checkfirst=False)
+    # CREATE TABLE goes to the first schema on the path; alembic_version is pinned to it too.
+    with eng.begin() as conn:
+        command.upgrade(alembic_config(conn, schema), "head")
+    # Every model table must exist in the test schema itself. A table the migrations forgot
+    # would otherwise resolve to the real one in `public` (it is on the search_path for
+    # pg_trgm), and tests would read and write production data.
     with eng.connect() as conn:
-        home = conn.execute(
-            text(
-                "SELECT n.nspname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
-                "WHERE c.oid = 'users'::regclass"
-            )
-        ).scalar()
-    if home != schema:
-        pytest.exit(f"Refusing to run: test tables resolve to schema {home!r}, not {schema!r}", returncode=2)
+        rows = conn.execute(text("SELECT tablename FROM pg_tables WHERE schemaname = :s"), {"s": schema})
+        built = set(rows.scalars())
+    missing = sorted((set(Base.metadata.tables) | {"alembic_version"}) - built)
+    if missing:
+        eng.dispose()
+        with admin.begin() as conn:
+            conn.execute(text(f'DROP SCHEMA "{schema}" CASCADE'))
+        pytest.exit(
+            f"Refusing to run: `alembic upgrade head` did not create {missing}. "
+            "Add the migration (alembic revision --autogenerate).",
+            returncode=2,
+        )
     _state["schema"] = schema
     yield eng
     eng.dispose()

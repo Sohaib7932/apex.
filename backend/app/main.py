@@ -1,9 +1,13 @@
+import logging
+
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.config import get_settings
+from app.core.db_errors import describe_db_error
 from app.core.logging import configure_logging
 from app.routers import auth, cart, catalog, health, orders, seller
 
@@ -11,6 +15,7 @@ API_PREFIX = "/api/v1"
 
 configure_logging()
 settings = get_settings()
+logger = logging.getLogger("app.errors")
 
 app = FastAPI(
     title="Apex Marketplace API",
@@ -53,6 +58,20 @@ async def validation_error(_: Request, exc: RequestValidationError) -> JSONRespo
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         content={"detail": message, "errors": [{"loc": e.get("loc"), "msg": e.get("msg")} for e in errors]},
+    )
+
+
+@app.exception_handler(SQLAlchemyError)
+async def database_error(request: Request, exc: SQLAlchemyError) -> JSONResponse:
+    """Log what failed (class, SQLSTATE, message, SQL without values) to stdout, which is
+    what Vercel and Render show as runtime logs, then answer with a plain 500."""
+    logger.error(
+        "database error",
+        extra={"fields": {"method": request.method, "path": request.url.path, **describe_db_error(exc)}},
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Something went wrong on our side. Please try again in a moment."},
     )
 
 

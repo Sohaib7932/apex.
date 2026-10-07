@@ -111,12 +111,14 @@ Use this instead of Render if you'd rather not add a card: the API runs as Verce
   migrations, seed scripts and dev files out of the bundle. The install is about 85 MB (the limit is 250 MB).
 - On Vercel the API opens one database connection per request and closes it after (Neon's pooler does the
   pooling), and stores failed sign-ins in Postgres, so nothing depends on memory or local disk.
-- Nothing runs migrations or the seed on deploy.
+- Nothing runs migrations or the seed on deploy. **Whenever a pull adds a file under
+  `backend/alembic/versions/`, run `alembic upgrade head` from your computer before (or right after)
+  deploying**, or the new code will hit a table or column that doesn't exist yet.
 
 **Steps**
 
-1. **Apply the migrations once, from your computer**, before the first deploy. The `login_attempts` table is
-   new, so run this even if the database is already set up:
+1. **Apply the migrations from your computer** before the first deploy, even if the database is
+   already set up (later migrations add tables such as `login_attempts`):
    ```bash
    cd backend && alembic upgrade head      # uses DATABASE_URL_UNPOOLED from backend/.env
    ```
@@ -124,7 +126,9 @@ Use this instead of Render if you'd rather not add a card: the API runs as Verce
 2. In Vercel: **Add New > Project**, import the same repo, and set **Root Directory** to `backend`.
    Leave Framework Preset as detected (FastAPI) and the build settings empty.
 3. Add the environment variables below (Production and Preview), then **Deploy**.
-4. Open `https://<your-api>.vercel.app/health`. It should say `"database":"ok"`.
+4. Open `https://<your-api>.vercel.app/health`. It should say `"status":"ok"`. If it answers 503 with
+   `"missing_tables": [...]`, the migrations from step 1 haven't been applied to the database this
+   deployment uses: run `alembic upgrade head` against it.
 5. In the **frontend** project, set `API_URL` = `https://<your-api>.vercel.app` (no trailing slash) and redeploy.
 6. In Stripe (test mode): **Developers > Webhooks > Add endpoint**
    - URL: `https://<your-api>.vercel.app/api/v1/webhooks/stripe`
@@ -146,6 +150,9 @@ Use this instead of Render if you'd rather not add a card: the API runs as Verce
 | `DATABASE_URL_UNPOOLED` | no | Neon **direct** string. Only migrations use it, and they run from your computer, so it can be left out |
 
 `VERCEL` is set by Vercel itself; the API uses it to switch to one connection per request.
+If a request answers 500, open the backend project's **Logs** and search for `database error`: each entry
+has the error class, the SQLSTATE, Postgres's message and the failing SQL (with placeholders, never the
+values).
 Vercel deployment protection is off for production URLs by default; if you turn it on, Stripe's webhook calls
 will be blocked.
 

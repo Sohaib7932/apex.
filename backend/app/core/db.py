@@ -49,7 +49,23 @@ def get_db() -> Iterator[Session]:
         session.close()
 
 
-def ping_database() -> None:
-    """Raise if the database is unreachable."""
+def ping_database() -> list[str]:
+    """Raise if the database is unreachable; return the model tables it is missing.
+
+    A missing table means a migration was not applied (e.g. after a deploy that skips
+    migrations, like Vercel). Only table names are returned, never connection details.
+    """
+    import app.models  # noqa: F401  (registers every table on Base.metadata)
+
+    expected = sorted(Base.metadata.tables)
     with get_engine().connect() as conn:
-        conn.execute(text("SELECT 1"))
+        present = set(
+            conn.execute(
+                text(
+                    "SELECT tablename FROM pg_tables "
+                    "WHERE schemaname = current_schema() AND tablename = ANY(:names)"
+                ),
+                {"names": expected},
+            ).scalars()
+        )
+    return [name for name in expected if name not in present]

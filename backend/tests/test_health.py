@@ -28,10 +28,24 @@ def test_health_db_down_returns_503_without_details():
 
     res = _client(boom).get("/health")
     assert res.status_code == 503
-    assert res.json() == {"status": "degraded", "database": "unreachable", "database_latency_ms": None}
+    assert res.json() == {
+        "status": "degraded",
+        "database": "unreachable",
+        "database_latency_ms": None,
+        "missing_tables": [],
+    }
     assert "secret-host" not in res.text
 
 
 def test_health_also_served_under_api_prefix():
     res = _client(lambda: None).get("/api/v1/health")
     assert res.status_code == 200
+
+
+def test_health_reports_unapplied_migrations():
+    res = _client(lambda: ["login_attempts"]).get("/health")
+    assert res.status_code == 503
+    body = res.json()
+    assert body["status"] == "degraded"
+    assert body["database"] == "ok"
+    assert body["missing_tables"] == ["login_attempts"]

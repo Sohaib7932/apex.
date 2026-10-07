@@ -76,3 +76,19 @@ def test_successful_login_clears_failed_tries(db, make_client):
     assert ok.status_code == 200
     db.expire_all()
     assert db.scalar(select(func.count(LoginAttempt.id))) == 0
+
+
+def test_signup_login_logout_login_again(db, make_client):
+    """The full sign-in cycle on a schema built by the Alembic migrations (see conftest)."""
+    client = make_client()
+    created = signup(client, "cycle@example.com", "Cycle User")
+    assert client.get("/api/v1/auth/me").json()["id"] == created["id"]
+
+    creds = {"email": "cycle@example.com", "password": "password123"}
+    for _ in range(2):
+        assert client.post("/api/v1/auth/logout").status_code == 204
+        assert client.get("/api/v1/auth/me").status_code == 401
+        res = client.post("/api/v1/auth/login", json=creds)
+        assert res.status_code == 200, res.text
+        assert res.json()["id"] == created["id"]
+        assert client.get("/api/v1/auth/me").status_code == 200
