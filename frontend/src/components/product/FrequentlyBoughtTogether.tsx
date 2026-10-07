@@ -53,7 +53,7 @@ export function FrequentlyBoughtTogether({ items }: { items: ProductSummary[] })
                     className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
                   />
                   <span className="min-w-0">
-                    <span className="line-clamp-2 font-semibold">{i === 0 ? `This item: ${p.title}` : p.title}</span>
+                    <span className="block font-semibold break-words">{i === 0 ? `This item: ${p.title}` : p.title}</span>
                     <span className="font-bold text-accent-text">{money(p.price_cents)}</span>
                   </span>
                 </label>

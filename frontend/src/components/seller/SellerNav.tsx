@@ -22,7 +22,7 @@ export function SellerSidebar({ storeName, storeSlug }: { storeName: string; sto
     <nav aria-label="Seller workspace" className="sticky top-4 rounded-card bg-surface p-3 shadow-card">
       <div className="border-b border-line px-3 pt-2 pb-4">
         <p className="text-2xs font-bold uppercase tracking-wide text-accent-text">Seller Central</p>
-        <p className="mt-1 line-clamp-2 text-base font-extrabold">{storeName}</p>
+        <p className="mt-1 text-base font-extrabold break-words">{storeName}</p>
       </div>
       <ul className="mt-3 space-y-1">
         {ITEMS.map(({ href, label, icon: Icon }) => {

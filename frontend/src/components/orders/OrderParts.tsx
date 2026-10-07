@@ -99,7 +99,7 @@ export function OrderDetailView({ order }: { order: Order }) {
                 <ProductImage src={item.image} alt="" sizes="80px" className="size-20 rounded-control" />
               </Link>
               <div className="min-w-0 flex-1 space-y-1">
-                <Link href={`/product/${item.product_slug}`} className="line-clamp-2 font-semibold hover:underline">
+                <Link href={`/product/${item.product_slug}`} className="font-semibold break-words hover:underline">
                   {item.title}
                 </Link>
                 <p className="text-sm text-ink-muted">

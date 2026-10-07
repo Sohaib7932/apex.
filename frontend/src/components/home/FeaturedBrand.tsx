@@ -30,7 +30,9 @@ export function FeaturedBrand({ data }: { data: NonNullable<HomePayload["feature
             <li key={p.id}>
               <Link href={`/product/${p.slug}`} className="group block rounded-card bg-surface p-2 shadow-card sm:p-3">
                 <ProductImage src={p.image} alt="" sizes="(max-width: 1024px) 30vw, 18vw" className="aspect-square w-full rounded-control" />
-                <p className="mt-2 line-clamp-2 text-xs font-semibold group-hover:underline sm:text-sm">{p.title}</p>
+                <p title={p.title} className="mt-2 line-clamp-2 min-h-[2lh] text-xs font-semibold break-words group-hover:underline sm:text-sm">
+                  {p.title}
+                </p>
                 <p className="mt-1 text-sm font-extrabold sm:text-base">{money(p.price_cents)}</p>
               </Link>
             </li>

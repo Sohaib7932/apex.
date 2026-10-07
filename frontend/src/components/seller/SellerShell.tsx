@@ -26,7 +26,7 @@ export function SellerShell({
             <div className="mx-auto flex max-w-375 items-center gap-2 px-4 py-2.5 text-sm">
               <Store aria-hidden="true" className="size-4 text-accent-text" />
               <span className="text-2xs font-bold uppercase tracking-wide text-accent-text">Seller Central</span>
-              <span className="truncate font-bold">{store.store_name}</span>
+              <span className="min-w-0 font-bold break-words">{store.store_name}</span>
             </div>
           </div>
         )}
@@ -65,8 +65,8 @@ export function SellerPageHeader({ title, subtitle, action }: { title: string; s
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
+        <h1 className="text-2xl font-extrabold tracking-tight break-words sm:text-3xl">{title}</h1>
+        {subtitle && <p className="mt-1 text-sm text-ink-muted break-words">{subtitle}</p>}
       </div>
       {action}
     </div>

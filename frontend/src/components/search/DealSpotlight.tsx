@@ -21,7 +21,7 @@ export function DealSpotlight({ product }: { product: ProductSummary }) {
             Ends in <Countdown to={product.deal.ends_at} format="words" className="font-bold text-on-chrome" />
           </span>
         </p>
-        <p className="mt-1.5 line-clamp-1 text-base font-bold">
+        <p className="mt-1.5 text-base font-bold break-words">
           {product.deal.discount_pct}% off {product.title}
         </p>
         <p className="text-sm text-on-chrome-muted">{product.deal.claimed_pct}% claimed. Limited stock at this price.</p>

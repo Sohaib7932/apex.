@@ -37,7 +37,7 @@ export function FlashDeals({ products, total }: { products: ProductSummary[]; to
                 )}
               </Link>
               <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
-                <h3 className="line-clamp-2 text-sm font-semibold sm:text-base">
+                <h3 title={p.title} className="line-clamp-2 min-h-[2lh] text-sm font-semibold break-words sm:text-base">
                   <Link href={`/product/${p.slug}`} className="hover:underline">
                     {p.title}
                   </Link>

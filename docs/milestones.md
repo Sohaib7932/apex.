@@ -373,3 +373,42 @@ The API and migrations use the same branch (pooled and direct endpoints of ep-sn
   `/seller/orders?status=to_ship` round-trips through sign-in; sign-up from the Selling flow ends on
   `/seller/start`; the switch shows the right side on every page. 81-page sweep: no sideways scrolling,
   no console errors.
+
+## No more cut-off text, and the Apex icon in the browser tab (2026-10-07)
+
+Visual only: no behaviour, data or routes changed. Audited every `truncate`, `text-ellipsis`,
+`line-clamp`, `whitespace-nowrap` and `overflow-hidden` in `frontend/src`, then checked the rendered pages
+with a script that flags any element actually cutting text off (ellipsis, line clamp, clipped overflow).
+
+**Rules applied**
+- Headings and key information wrap in full (`break-words` for long words), never clamped.
+- Dense layouts (product cards in grids and carousels, cart "saved for later", seller products table) show
+  at most two lines with `line-clamp-2`. They reserve two lines (`min-h-[2lh]`) so cards in a row line up,
+  and the full title is in a `title` attribute, shown on hover. No card is clamped to a single line any more.
+- Tables scroll inside their own card instead of squeezing text.
+
+**What changed**
+- Product page: the title keeps `break-words`; the three spec tiles under the gallery no longer cut values
+  ("60 hours (ANC off), 40 hours (ANC on)"); "Frequently bought together" shows full names.
+- Full product names: cart lines, checkout summary, order confirmation and order detail (`OrderParts`),
+  seller orders table, search list view, the search "deal spotlight" banner.
+- Two lines plus hover title: product cards (search grid, carousels, cart recommendations), home deal tiles,
+  deal of the day, featured brand, flash deals, "Keep shopping" (was one line), the hero spotlight
+  (was one line), cart "saved for later", seller products table and its mobile cards.
+- Seller Central: the store name in the top bar (was `truncate`) and the sidebar wrap; page headings and the
+  "Edit product" subtitle wrap; the products table scrolls sideways inside its card at tablet widths
+  (it was `overflow-hidden`); the product form's Title field grows to show the whole title. Enter still
+  submits the form, as before.
+- Header: between 768 and 1439px the search box was squeezed (its placeholder was cut, and at 1024px the
+  input was 0px wide). Below 1440px (`wide`, a new breakpoint in `globals.css`) the search now has its own
+  full-width row; from 1440px the header is one row as before. The department menu no longer has a max
+  width, and "Hello, name" / "Deliver to name" wrap instead of pushing the search box.
+- Browser tab: `favicon.ico` was still the Next.js default. Replaced with `app/icon.svg`, the Apex mark from
+  the header logo (orange rounded square, black peak). The header logo itself is unchanged.
+
+**Checked**: home, search (grid and list), two product pages, cart, checkout, account, orders, order detail,
+login, signup and every seller page (overview, products, new and edit product, orders, settings, start
+selling), each at 390, 820 and 1440px; the header also at 640, 768, 900, 1024, 1100 and 1280px. No
+sideways scrolling, no single-line or ellipsis truncation anywhere, every remaining two-line clamp has
+the full text on hover, card rows line up, and the search placeholder fits at every width. Lint,
+typecheck and build pass.

@@ -41,7 +41,7 @@ function Detail({ order, onShipped }: { order: SellerOrderRow; onShipped: (d: Se
           <li key={l.id} className="flex gap-3">
             <ProductImage src={l.image} alt="" sizes="56px" className="size-14 shrink-0 rounded-control" />
             <div className="min-w-0 flex-1 text-sm">
-              <Link href={`/product/${l.product_slug}`} className="line-clamp-1 font-semibold hover:underline">
+              <Link href={`/product/${l.product_slug}`} className="font-semibold break-words hover:underline">
                 {l.title}
               </Link>
               <p className="text-ink-muted">

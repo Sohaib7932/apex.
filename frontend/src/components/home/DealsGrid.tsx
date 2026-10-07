@@ -40,7 +40,9 @@ function Tiles({ products, note }: { products: ProductSummary[]; note: (p: Produ
         <li key={p.id}>
           <Link href={`/product/${p.slug}`} className="group block">
             <ProductImage src={p.image} alt="" sizes="(max-width: 768px) 45vw, 12vw" className="aspect-square w-full rounded-control" />
-            <p className="mt-1.5 line-clamp-1 text-sm font-semibold group-hover:underline">{p.title}</p>
+            <p title={p.title} className="mt-1.5 line-clamp-2 min-h-[2lh] text-sm font-semibold break-words group-hover:underline">
+              {p.title}
+            </p>
             <p className="text-xs text-ink-muted">{note(p)}</p>
           </Link>
         </li>
@@ -67,7 +69,9 @@ function DealOfTheDay({ product }: { product: ProductSummary }) {
       <h3 className="mt-3 text-lg font-extrabold tracking-tight">Apex Choice Deals</h3>
       <Link href={`/product/${product.slug}`} className="group mt-3 block">
         <ProductImage src={product.image} alt="" sizes="(max-width: 768px) 90vw, 22vw" className="aspect-[4/3] w-full rounded-control" />
-        <p className="mt-3 line-clamp-2 text-sm font-semibold group-hover:underline">{product.title}</p>
+        <p title={product.title} className="mt-3 line-clamp-2 text-sm font-semibold break-words group-hover:underline">
+          {product.title}
+        </p>
       </Link>
       <div className="mt-1">
         <StarRating rating={product.rating_avg} count={product.rating_count} />

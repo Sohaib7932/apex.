@@ -19,7 +19,7 @@ function ProductRow({ product: p }: { product: ProductSummary }) {
       <div className="min-w-0 space-y-1.5">
         {p.badges[0] && <ProductBadge label={p.badges[0]} />}
         <p className="text-xs font-medium text-ink-muted">{p.brand.name}</p>
-        <h3 className="line-clamp-2 text-base font-semibold">
+        <h3 className="text-base font-semibold break-words">
           <Link href={`/product/${p.slug}`} className="hover:text-accent-text hover:underline">
             {p.title}
           </Link>

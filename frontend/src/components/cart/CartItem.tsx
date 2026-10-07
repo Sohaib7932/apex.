@@ -40,7 +40,7 @@ export function CartItem({ line }: { line: CartLine }) {
         <ProductImage src={line.image} alt="" sizes="8rem" className="aspect-square w-full rounded-control" />
       </Link>
       <div className="min-w-0 space-y-1">
-        <h3 className="line-clamp-2 text-base font-semibold">
+        <h3 className="text-base font-semibold break-words">
           <Link href={`/product/${line.slug}`} className="hover:text-accent-text hover:underline">
             {line.title}
           </Link>
@@ -102,7 +102,7 @@ export function SavedItem({ line }: { line: CartLine }) {
         <ProductImage src={line.image} alt="" sizes="6rem" className="size-24 rounded-control" />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
-        <h3 className="line-clamp-2 text-sm font-semibold">
+        <h3 title={line.title} className="line-clamp-2 min-h-[2lh] text-sm font-semibold break-words">
           <Link href={`/product/${line.slug}`} className="hover:underline">
             {line.title}
           </Link>

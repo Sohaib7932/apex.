@@ -166,11 +166,11 @@ export function ProductsTable({ data, q, status }: { data: SellerProductPage; q:
         ) : (
           <>
             {/* Desktop table */}
-            <div className="hidden overflow-hidden rounded-card bg-surface shadow-card md:block">
+            <div className="hidden overflow-x-auto rounded-card bg-surface shadow-card md:block">
               <table className="w-full text-left text-sm">
                 <thead className="bg-surface-tint text-xs uppercase tracking-wide text-ink-muted">
                   <tr>
-                    <th scope="col" className="px-4 py-3">Product</th>
+                    <th scope="col" className="min-w-64 px-4 py-3">Product</th>
                     <th scope="col" className="px-4 py-3 text-right">Price</th>
                     <th scope="col" className="px-4 py-3 text-right">Stock</th>
                     <th scope="col" className="px-4 py-3">Status</th>
@@ -184,7 +184,7 @@ export function ProductsTable({ data, q, status }: { data: SellerProductPage; q:
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <ProductImage src={row.image} alt="" sizes="48px" className="size-12 shrink-0 rounded-control" />
-                          <Link href={`/seller/products/${row.id}`} className="line-clamp-2 font-semibold hover:underline">
+                          <Link href={`/seller/products/${row.id}`} title={row.title} className="line-clamp-2 font-semibold break-words hover:underline">
                             {row.title}
                           </Link>
                         </div>
@@ -210,7 +210,9 @@ export function ProductsTable({ data, q, status }: { data: SellerProductPage; q:
                   <div className="flex gap-3">
                     <ProductImage src={row.image} alt="" sizes="64px" className="size-16 shrink-0 rounded-control" />
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-sm font-semibold">{row.title}</p>
+                      <p title={row.title} className="line-clamp-2 text-sm font-semibold break-words">
+                        {row.title}
+                      </p>
                       <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
                         <span className="font-bold">{money(row.price_cents)}</span>
                         <span className="text-ink-muted">

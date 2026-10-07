@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
               <ul className="mt-4 grid grid-cols-3 gap-2">
                 {specs.slice(0, 3).map(([k, v]) => (
                   <li key={k} className="rounded-control bg-surface p-3 shadow-card">
-                    <p className="line-clamp-1 text-sm font-bold">{v}</p>
+                    <p className="text-sm font-bold break-words">{v}</p>
                     <p className="text-xs text-ink-muted">{k}</p>
                   </li>
                 ))}
@@ -91,7 +91,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
               Visit the {p.seller.name} Store
               <ExternalLink aria-hidden="true" className="size-3.5" />
             </Link>
-            <h1 className="text-2xl leading-tight font-extrabold tracking-tight sm:text-3xl">{p.title}</h1>
+            <h1 className="text-2xl leading-tight font-extrabold tracking-tight break-words sm:text-3xl">{p.title}</h1>
             <p className="text-base text-ink-muted">{p.description}</p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <a href="#reviews" className="hover:underline">

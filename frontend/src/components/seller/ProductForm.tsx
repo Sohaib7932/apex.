@@ -139,7 +139,23 @@ export function ProductForm({
       <section className="space-y-5 rounded-card bg-surface p-5 shadow-card sm:p-6">
         <h2 className="text-lg font-extrabold">Basics</h2>
         <Field id="title" label="Title" error={errors.title}>
-          <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={210} aria-invalid={!!errors.title} className={`${sellerInput(!!errors.title)} h-12`} />
+          {/* A textarea that grows with the text, so a long title is never hidden. Enter still
+              submits, like the one-line input it replaces; whitespace is normalised on save. */}
+          <textarea
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                e.currentTarget.form?.requestSubmit();
+              }
+            }}
+            rows={2}
+            maxLength={210}
+            aria-invalid={!!errors.title}
+            className={`${sellerInput(!!errors.title)} field-sizing-content min-h-12 resize-none py-3 break-words`}
+          />
         </Field>
         <Field id="description" label="Description" hint="What it is, who it's for, what's in the box.">
           <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} maxLength={5000} className={`${sellerInput(false)} py-3`} />

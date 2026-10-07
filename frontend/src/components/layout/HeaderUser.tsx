@@ -16,7 +16,7 @@ const chromeLink =
 function Stacked({ top, bottom }: { top: string; bottom: string }) {
   return (
     <span className="flex flex-col text-left leading-tight">
-      <span className="text-2xs text-on-chrome-muted">{top}</span>
+      <span className="max-w-36 text-2xs break-words text-on-chrome-muted">{top}</span>
       <span className="text-sm font-bold">{bottom}</span>
     </span>
   );

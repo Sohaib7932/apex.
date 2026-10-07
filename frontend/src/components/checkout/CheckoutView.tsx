@@ -276,7 +276,7 @@ export function CheckoutView({ initialAddress }: { initialAddress: Address }) {
                   <li key={l.key} className="flex gap-3 p-3">
                     <ProductImage src={l.image} alt="" sizes="64px" className="size-16 shrink-0 rounded-control" />
                     <div className="min-w-0 flex-1 text-sm">
-                      <p className="line-clamp-2 font-semibold">{l.title}</p>
+                      <p className="font-semibold break-words">{l.title}</p>
                       <p className="text-ink-muted">
                         {l.variant_label ? `${l.variant_label} · ` : ""}Qty {l.quantity} · Sold by {l.seller_name}
                       </p>

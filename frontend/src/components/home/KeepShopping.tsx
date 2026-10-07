@@ -48,7 +48,9 @@ export function KeepShopping({ fallback }: { fallback: ProductSummary[] }) {
             <Link href={`/product/${it.slug}`} className="group flex items-center gap-3">
               <ProductImage src={it.image} alt="" sizes="64px" className="size-16 shrink-0 rounded-control" />
               <span className="min-w-0">
-                <span className="line-clamp-1 text-sm font-semibold group-hover:underline">{it.title}</span>
+                <span title={it.title} className="line-clamp-2 text-sm font-semibold break-words group-hover:underline">
+                  {it.title}
+                </span>
                 <span className="text-sm font-bold">{money(it.price)}</span>
               </span>
             </Link>

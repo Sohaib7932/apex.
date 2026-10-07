@@ -18,7 +18,7 @@ function Form({ q = "", category = "" }: { q?: string; category?: string }) {
           name="category"
           defaultValue={category}
           key={category}
-          className="h-full max-w-40 appearance-none border-r border-line bg-surface-tint py-0 pr-7 pl-3 text-xs font-medium text-ink outline-none"
+          className="h-full appearance-none border-r border-line bg-surface-tint py-0 pr-7 pl-3 text-xs font-medium text-ink outline-none"
         >
           {departments.map((d) => (
             <option key={d.value} value={d.value}>

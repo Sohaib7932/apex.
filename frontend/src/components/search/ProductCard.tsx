@@ -42,7 +42,7 @@ export function ProductCard({
       </Link>
       <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
         <p className="text-xs font-medium text-ink-muted">{p.brand.name}</p>
-        <h3 className="line-clamp-2 text-sm leading-snug font-semibold sm:text-base">
+        <h3 title={p.title} className="line-clamp-2 min-h-[2lh] text-sm leading-snug font-semibold break-words sm:text-base">
           <Link href={`/product/${p.slug}`} className="hover:text-accent-text hover:underline">
             {p.title}
           </Link>

@@ -16,6 +16,11 @@
   --text-2xs: 0.75rem;
   --text-2xs--line-height: 1rem;
 
+  /* ---- Breakpoints ---- */
+  /* The full header (search, mode switch, account, orders, cart) fits on one row from here;
+     below it the search gets its own row so it is never squeezed. */
+  --breakpoint-wide: 90rem;
+
   /* ---- Neutrals and surfaces ---- */
   --color-ink: #0b1c30; /* headings and body text */
   --color-ink-muted: #4d5566; /* secondary text; darker than the design's #8F9299 for AA contrast */

@@ -59,7 +59,9 @@ export function HeroBanner({ spotlight }: { spotlight: ProductSummary | null }) 
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-2xs font-bold uppercase tracking-wide text-accent-text">Spotlight item</p>
-                <p className="line-clamp-1 text-sm font-bold sm:text-base">{spotlight.title}</p>
+                <p title={spotlight.title} className="line-clamp-2 text-sm font-bold break-words sm:text-base">
+                  {spotlight.title}
+                </p>
               </div>
               <PriceTag cents={spotlight.price_cents} listCents={spotlight.list_price_cents} size="md" />
             </div>
