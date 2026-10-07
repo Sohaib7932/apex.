@@ -27,15 +27,15 @@ function PromoCode() {
 
   if (promo) {
     return (
-      <div className="flex items-center justify-between gap-2 rounded-control bg-success-soft px-3 py-2 text-sm">
-        <span className="flex items-center gap-2 font-semibold text-success">
+      <div className="flex items-center justify-between gap-2 rounded-control bg-primary-soft px-3 py-2 text-sm">
+        <span className="flex items-center gap-2 font-semibold text-accent-text">
           <Tag aria-hidden="true" className="size-4" /> {promo.code} applied ({promo.percent_off}% off)
         </span>
         <button
           type="button"
           onClick={() => removePromo()}
           aria-label={`Remove promo code ${promo.code}`}
-          className="grid size-9 place-items-center rounded-control hover:bg-surface"
+          className="grid size-11 place-items-center rounded-control hover:bg-surface"
         >
           <X aria-hidden="true" className="size-4" />
         </button>
@@ -100,12 +100,12 @@ export function OrderSummary({ cart }: { cart: Cart }) {
       <dl className={`space-y-2 transition-opacity ${syncing ? "opacity-60" : ""}`} aria-busy={syncing}>
         <Row label={`Items (${s.item_count})`} value={money(s.subtotal_cents)} />
         {s.discount_cents > 0 && (
-          <Row label={`Promo (${cart.promo?.code})`} value={`-${money(s.discount_cents)}`} tone="text-success font-semibold" />
+          <Row label={`Promo (${cart.promo?.code})`} value={`-${money(s.discount_cents)}`} tone="font-semibold text-accent-text" />
         )}
         <Row
           label="Estimated delivery"
           value={s.shipping_cents === 0 ? (s.item_count ? "FREE" : money(0)) : money(s.shipping_cents)}
-          tone={s.shipping_cents === 0 && s.item_count ? "font-semibold text-success" : undefined}
+          tone={s.shipping_cents === 0 && s.item_count ? "font-semibold text-accent-text" : undefined}
         />
         <Row label="Estimated tax (8%)" value={money(s.tax_cents)} />
         <div className="border-t border-line pt-3">

@@ -47,7 +47,7 @@ function Detail({ order, onShipped }: { order: SellerOrderRow; onShipped: (d: Se
               <p className="text-ink-muted">
                 {l.variant_label ? `${l.variant_label} · ` : ""}Qty {l.quantity} · {money(l.unit_price_cents)} each
               </p>
-              <p className={`text-xs font-bold ${l.fulfillment_status === "shipped" ? "text-seller" : "text-accent-text"}`}>
+              <p className={`text-xs font-bold ${l.fulfillment_status === "shipped" ? "text-accent-text" : "text-accent-text"}`}>
                 {l.fulfillment_status === "shipped" ? `Shipped ${l.shipped_at ? formatDate(l.shipped_at) : ""}` : "Not shipped yet"}
               </p>
             </div>
@@ -57,7 +57,7 @@ function Detail({ order, onShipped }: { order: SellerOrderRow; onShipped: (d: Se
       </ul>
       <div className="space-y-3 text-sm">
         <p className="flex gap-2">
-          <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-seller" />
+          <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent-text" />
           <span>
             <span className="font-semibold">{a.full_name}</span>
             <br />
@@ -70,7 +70,7 @@ function Detail({ order, onShipped }: { order: SellerOrderRow; onShipped: (d: Se
         <p className="text-ink-muted">{detail.delivery_method === "one_day" ? "One-Day delivery" : "Standard delivery"}</p>
         {detail.can_ship ? (
           <Button
-            variant="seller"
+            variant="primary"
             className="w-full"
             loading={busy}
             onClick={async () => {

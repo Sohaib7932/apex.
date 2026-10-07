@@ -32,7 +32,7 @@ export function SubNav() {
         <button
           type="button"
           onClick={() => drawer.current?.showModal()}
-          className="flex shrink-0 items-center gap-1.5 rounded-control px-2 py-2.5 text-sm font-bold hover:bg-chrome"
+          className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-control px-2 text-sm font-bold hover:bg-chrome"
         >
           <Menu aria-hidden="true" className="size-5" />
           All
@@ -46,7 +46,7 @@ export function SubNav() {
                 <Link
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={`relative block px-2.5 py-2.5 text-sm whitespace-nowrap transition-colors hover:text-on-chrome ${
+                  className={`relative block px-2.5 py-3 text-sm whitespace-nowrap transition-colors hover:text-on-chrome ${
                     active
                       ? "font-semibold text-on-chrome after:absolute after:inset-x-2.5 after:bottom-0 after:h-0.5 after:rounded-pill after:bg-primary"
                       : "text-on-chrome-muted"

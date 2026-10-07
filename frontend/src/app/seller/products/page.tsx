@@ -27,7 +27,7 @@ export default async function SellerProductsPage({ searchParams }: PageProps<"/s
         title="Products"
         subtitle="Everything you sell. Drafts are hidden from the store until you publish them."
         action={
-          <ButtonLink href="/seller/products/new" variant="seller">
+          <ButtonLink href="/seller/products/new" variant="primary">
             <Plus aria-hidden="true" className="size-4" /> Add product
           </ButtonLink>
         }

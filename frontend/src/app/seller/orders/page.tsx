@@ -37,7 +37,7 @@ export default async function SellerOrdersPage({ searchParams }: PageProps<"/sel
                     href={`/seller/orders${toQuery({ status: status === "all" ? "" : status, page: p > 1 ? p : "" })}`}
                     aria-current={p === page ? "page" : undefined}
                     className={`grid size-11 place-items-center rounded-control text-sm font-bold ${
-                      p === page ? "bg-seller text-on-seller" : "bg-surface shadow-card hover:bg-seller-soft"
+                      p === page ? "bg-chrome text-on-chrome" : "bg-surface shadow-card hover:bg-surface-tint"
                     }`}
                   >
                     {p}

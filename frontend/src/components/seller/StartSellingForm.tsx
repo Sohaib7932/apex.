@@ -23,7 +23,7 @@ export function validateStore(name: string, description: string): { name?: strin
 }
 
 export const sellerInput = (bad: boolean) =>
-  `block w-full rounded-control border bg-surface px-3 text-base outline-none focus:border-seller focus:ring-2 focus:ring-seller/25 ${
+  `block w-full rounded-control border bg-surface px-3 text-base outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 ${
     bad ? "border-danger" : "border-line"
   }`;
 
@@ -117,7 +117,7 @@ export function StartSellingForm() {
           </p>
         </div>
       </div>
-      <Button type="submit" variant="seller" size="lg" loading={busy} className="w-full sm:w-auto">
+      <Button type="submit" variant="primary" size="lg" loading={busy} className="w-full sm:w-auto">
         Create my store
       </Button>
     </form>

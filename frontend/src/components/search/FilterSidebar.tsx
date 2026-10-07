@@ -34,7 +34,7 @@ function CheckRow({
   icon?: ReactNode;
 }) {
   return (
-    <label className="flex min-h-10 cursor-pointer items-center gap-3 rounded-control px-1 text-sm hover:bg-surface-tint">
+    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-control px-1 text-sm hover:bg-surface-tint">
       <input
         type="checkbox"
         checked={checked}
@@ -64,7 +64,7 @@ function OptionButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`flex min-h-10 w-full items-center gap-2 rounded-control px-1 text-left text-sm hover:bg-surface-tint ${
+      className={`flex min-h-11 w-full items-center gap-2 rounded-control px-1 text-left text-sm hover:bg-surface-tint ${
         active ? "font-bold text-accent-text" : "text-ink"
       }`}
     >
@@ -100,7 +100,7 @@ export function FilterSidebar({ state, filters }: { state: SearchState; filters:
         <button
           type="button"
           onClick={() => navigate(clearFilters(state))}
-          className="mb-4 min-h-10 text-sm font-bold text-accent-text hover:underline"
+          className="mb-4 min-h-11 text-sm font-bold text-accent-text hover:underline"
         >
           Clear all filters
         </button>
@@ -183,7 +183,7 @@ export function FilterSidebar({ state, filters }: { state: SearchState; filters:
                 value={brandQuery}
                 onChange={(e) => setBrandQuery(e.target.value)}
                 placeholder="Search brands"
-                className="h-10 w-full rounded-control border border-line bg-surface-tint pr-9 pl-3 text-sm outline-none focus:border-primary"
+                className="h-11 w-full rounded-control border border-line bg-surface-tint pr-9 pl-3 text-sm outline-none focus:border-primary"
               />
               <Search aria-hidden="true" className="absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-muted" />
             </label>
@@ -201,7 +201,7 @@ export function FilterSidebar({ state, filters }: { state: SearchState; filters:
             <button
               type="button"
               onClick={() => setShowAllBrands((v) => !v)}
-              className="mt-1 min-h-10 text-sm font-semibold text-accent-text hover:underline"
+              className="mt-1 min-h-11 text-sm font-semibold text-accent-text hover:underline"
             >
               {showAllBrands ? "See fewer" : `See all ${brands.length} brands`}
             </button>
@@ -243,7 +243,7 @@ export function FilterSidebar({ state, filters }: { state: SearchState; filters:
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
               placeholder="0"
-              className="h-10 w-full rounded-control border border-line px-2 text-sm outline-none focus:border-primary"
+              className="h-11 w-full rounded-control border border-line px-2 text-sm outline-none focus:border-primary"
             />
           </label>
           <label className="flex-1">
@@ -253,10 +253,10 @@ export function FilterSidebar({ state, filters }: { state: SearchState; filters:
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               placeholder="Any"
-              className="h-10 w-full rounded-control border border-line px-2 text-sm outline-none focus:border-primary"
+              className="h-11 w-full rounded-control border border-line px-2 text-sm outline-none focus:border-primary"
             />
           </label>
-          <button type="submit" className="h-10 rounded-control bg-chrome px-4 text-sm font-bold text-on-chrome hover:bg-chrome-2">
+          <button type="submit" className="h-11 rounded-control bg-chrome px-4 text-sm font-bold text-on-chrome hover:bg-chrome-2">
             Go
           </button>
         </form>

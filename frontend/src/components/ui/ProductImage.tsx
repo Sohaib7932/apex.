@@ -1,4 +1,8 @@
+"use client";
+
+import { ImageOff } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 /** Hosts that next/image may optimize (keep in sync with images.remotePatterns in next.config.ts). */
 const OPTIMIZED_HOSTS = ["images.unsplash.com"];
@@ -12,9 +16,22 @@ function canOptimize(src: string): boolean {
   }
 }
 
+function Placeholder({ className }: { className: string }) {
+  return (
+    <div
+      role="img"
+      aria-label="Image not available"
+      className={`grid place-items-center bg-surface-tint text-ink-subtle ${className}`}
+    >
+      <ImageOff aria-hidden="true" className="size-1/4 max-h-10 min-h-4 max-w-10 min-w-4" />
+    </div>
+  );
+}
+
 /**
- * Product photo in a fixed-ratio well. Local and allow-listed images are optimized;
- * seller-supplied URLs on other hosts are shown as-is.
+ * Product photo in a fixed-ratio well (the parent sets the ratio, the photo is cropped
+ * to fill it, never stretched). Missing or broken images show a neutral placeholder.
+ * Local and allow-listed images are optimized; other seller-supplied URLs are shown as-is.
  */
 export function ProductImage({
   src,
@@ -31,11 +48,8 @@ export function ProductImage({
   className?: string;
   fit?: "cover" | "contain";
 }) {
-  if (!src) {
-    return (
-      <div className={`grid place-items-center bg-surface-tint text-xs text-ink-muted ${className}`}>No image</div>
-    );
-  }
+  const [failed, setFailed] = useState<string | null>(null);
+  if (!src || failed === src) return <Placeholder className={className} />;
   return (
     <div className={`relative overflow-hidden bg-surface-tint ${className}`}>
       <Image
@@ -46,6 +60,7 @@ export function ProductImage({
         loading={priority ? "eager" : undefined}
         fetchPriority={priority ? "high" : undefined}
         unoptimized={!canOptimize(src)}
+        onError={() => setFailed(src)}
         className={fit === "cover" ? "object-cover" : "object-contain"}
       />
     </div>

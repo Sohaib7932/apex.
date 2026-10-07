@@ -27,10 +27,14 @@ export function CartRecommendations({ productIds }: { productIds: number[] }) {
   if (!products.length) return null;
   return (
     <section className="pt-4">
-      <SectionHeading
-        title="Customers who bought items in your cart also bought"
-        subtitle="Picked from the same departments as your cart"
-      />
+      {productIds.length > 0 ? (
+        <SectionHeading
+          title="Customers who bought items in your cart also bought"
+          subtitle="Picked from the same departments as your cart"
+        />
+      ) : (
+        <SectionHeading title="Popular right now" subtitle="Top picks other shoppers love" />
+      )}
       <Carousel label="Recommended for your cart">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} sizes="(max-width: 640px) 72vw, 24vw" />

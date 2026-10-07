@@ -21,7 +21,7 @@ const FILTERS = [
 
 function StatusPill({ row }: { row: SellerProductRow }) {
   return row.status === "published" ? (
-    <span className="inline-flex rounded-pill bg-seller-soft px-2.5 py-1 text-xs font-bold text-seller">Published</span>
+    <span className="inline-flex rounded-pill bg-primary-soft px-2.5 py-1 text-xs font-bold text-accent-text">Published</span>
   ) : (
     <span className="inline-flex rounded-pill bg-surface-tint-2 px-2.5 py-1 text-xs font-bold text-ink-muted">Draft</span>
   );
@@ -80,7 +80,7 @@ export function ProductsTable({ data, q, status }: { data: SellerProductPage; q:
     <div className="flex flex-wrap items-center gap-1">
       <Link
         href={`/seller/products/${row.id}`}
-        className="inline-flex min-h-10 items-center gap-1.5 rounded-control px-3 text-sm font-semibold text-seller hover:bg-seller-soft"
+        className="inline-flex min-h-11 items-center gap-1.5 rounded-control px-3 text-sm font-semibold text-accent-text hover:bg-primary-soft sm:min-h-9"
       >
         <Pencil aria-hidden="true" className="size-4" /> Edit
       </Link>
@@ -122,12 +122,12 @@ export function ProductsTable({ data, q, status }: { data: SellerProductPage; q:
                 role="tab"
                 aria-selected={active}
                 onClick={() => go({ status: f.value, page: 1 })}
-                className={`inline-flex min-h-10 items-center gap-2 rounded-pill px-4 text-sm font-semibold ${
-                  active ? "bg-seller text-on-seller" : "bg-surface text-ink shadow-card hover:bg-seller-soft"
+                className={`inline-flex min-h-11 items-center gap-2 rounded-pill px-4 text-sm font-semibold ${
+                  active ? "bg-chrome text-on-chrome" : "bg-surface text-ink shadow-card hover:bg-surface-tint"
                 }`}
               >
                 {f.label}
-                <span className={`text-xs tabular-nums ${active ? "opacity-90" : "text-ink-muted"}`}>{count}</span>
+                <span className={`text-xs tabular-nums ${active ? "text-on-chrome-muted" : "text-ink-muted"}`}>{count}</span>
               </button>
             );
           })}
@@ -150,7 +150,7 @@ export function ProductsTable({ data, q, status }: { data: SellerProductPage; q:
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by title"
-            className="h-11 w-full rounded-control border border-line bg-surface pr-3 pl-9 text-base outline-none focus:border-seller sm:text-sm"
+            className="h-11 w-full rounded-control border border-line bg-surface pr-3 pl-9 text-base outline-none focus:border-primary sm:text-sm"
           />
         </form>
       </div>
@@ -237,7 +237,7 @@ export function ProductsTable({ data, q, status }: { data: SellerProductPage; q:
               onClick={() => go({ page: p })}
               aria-current={p === data.page ? "page" : undefined}
               className={`grid size-11 place-items-center rounded-control text-sm font-bold ${
-                p === data.page ? "bg-seller text-on-seller" : "bg-surface shadow-card hover:bg-seller-soft"
+                p === data.page ? "bg-chrome text-on-chrome" : "bg-surface shadow-card hover:bg-surface-tint"
               }`}
             >
               {p}

@@ -21,7 +21,7 @@ export default async function OrdersPage({ searchParams }: PageProps<"/orders">)
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-3xl font-extrabold tracking-tight">Your Orders</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Your Orders</h1>
       <p className="mt-1 text-ink-muted">Track each item&apos;s shipping status, store by store.</p>
 
       <div className="mt-6">

@@ -33,7 +33,7 @@ export function Pagination({ state, pages, total }: { state: SearchState; pages:
         <select
           value={state.per_page}
           onChange={(e) => navigate(withChanges(state, { per_page: Number(e.target.value) }))}
-          className="h-10 rounded-control border border-line bg-surface px-2 font-semibold text-ink"
+          className="h-11 rounded-control border border-line bg-surface px-2 font-semibold text-ink"
         >
           {PER_PAGE_OPTIONS.map((n) => (
             <option key={n} value={n}>

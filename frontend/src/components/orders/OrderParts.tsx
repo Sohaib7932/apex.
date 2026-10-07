@@ -10,7 +10,7 @@ const STATUS_STYLE: Record<string, string> = {
   Preparing: "bg-primary-soft text-accent-text",
   "Partially shipped": "bg-primary-soft text-accent-text",
   Shipped: "bg-surface-tint-3 text-ink",
-  Delivered: "bg-success-soft text-success",
+  Delivered: "bg-chrome text-on-chrome",
   Cancelled: "bg-deal-soft text-deal",
 };
 
@@ -32,7 +32,7 @@ function ItemStatus({ item, orderStatus }: { item: Order["items"][number]; order
   }
   if (orderStatus === "delivered") {
     return (
-      <span className="flex items-center gap-1.5 text-sm font-semibold text-success">
+      <span className="flex items-center gap-1.5 text-sm font-semibold text-ink">
         <PackageCheck aria-hidden="true" className="size-4" /> Delivered
       </span>
     );
@@ -88,7 +88,7 @@ export function OrderDetailView({ order }: { order: Order }) {
         </div>
         {order.status !== "cancelled" && order.status !== "pending" && (
           <p className="mt-4 flex items-center gap-2 text-base font-bold">
-            <CircleCheck aria-hidden="true" className="size-5 text-success" />
+            <CircleCheck aria-hidden="true" className="size-5 text-accent-text" />
             {order.status === "delivered" ? "Delivered" : `Estimated delivery: ${formatDate(order.estimated_delivery)}`}
           </p>
         )}

@@ -17,7 +17,7 @@ export default async function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
-      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Checkout</h1>
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl">Checkout</h1>
       <CheckoutView initialAddress={initial} />
     </div>
   );

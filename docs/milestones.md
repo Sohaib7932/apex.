@@ -275,3 +275,47 @@ re-seeded, and later test runs leave it untouched (checked: 20 users, 59 product
   Stripe webhook setup, demo accounts and promo codes.
 - **Final checks:** backend ruff clean and 28/28 tests pass; frontend lint, typecheck and `next build` pass.
 - The dev database was re-seeded afterwards, so the demo starts clean.
+
+## Design pass: one Apex look everywhere, no green (2026-10-07)
+
+Visual changes only: no behavior, API, database or route changes.
+
+**Colors**
+- Removed every green and cream token (`--color-seller*`, `--color-switch-track`, `--color-success*`).
+  Nothing in the frontend uses green or cream now (searched all `.tsx`, `.ts` and `.css`).
+- Added two orange steps: `--color-primary-strong` `#b85700` (white text at 4.8:1, for fills that carry
+  white text) and `--color-chart` `#d96b00` (passes the dataviz lightness, chroma and 3:1 contrast checks).
+- Status colors without green, following the reference designs: "In Stock" is a small black badge (as in
+  cart.png); FREE delivery, applied promos and "Unlocked" use the orange text color; "Delivered" is a dark
+  pill; "Shipped" a light blue-gray pill; "To ship" a peach pill.
+
+**Buying/Selling switch**
+- Same rounded pill, now on a dark track that sits on the black header. The active side is deep orange
+  with white text (4.8:1). The inactive side is light gray (8:1 on the track) and turns white on hover.
+- Bag icon for Buying, storefront icon for Selling. Segments are 44px tall on phones, 36px on desktop.
+
+**Seller Central** (same palette, work-area layout)
+- White sidebar card with a "Seller Central" label and the store name. The current page has a peach
+  background and an orange marker bar. On phones, a "Seller Central" strip sits under the header and the
+  bottom tab bar marks the current tab in orange.
+- Primary buttons are orange. Filter tabs, pagination and selected badges use dark chips for the active
+  state, like the black active page number in search.png.
+- The earnings card is black with an orange "orders to ship" button. The 30-day chart uses orange bars.
+- The "What you get" panel on Start selling is black, like the sign-in side panel.
+- The seller footer is the dark legal row used by the storefront.
+
+**Design review fixes across the app**
+- **Tap targets (44px on phones):** small buttons, filter rows, active-filter chips, price inputs, sort and
+  per-page selects, view toggles, review star bars, Helpful, promo remove, footer and legal links,
+  sub-nav links, header cart link, seller tabs, image reorder buttons and badge chips. Desktop keeps the
+  compact sizes.
+- **Headings:** every page title uses the same scale (24px on phones, 30px from 640px up).
+- **Images:** missing or broken product images (including bad seller URLs) show a neutral placeholder
+  with an icon instead of a broken-image glyph. Photos always fill their frame by cropping, never stretching.
+- **Errors and 404:** one look everywhere (icon in a soft circle, white card, clear action). Storefront
+  errors keep the department bar and footer; the seller 404 matches.
+- **Small things:** the account page's cart tile uses a cart icon; on an empty cart the carousel reads
+  "Popular right now" instead of "Customers who bought items in your cart"; the seller layout only
+  reserves space for the bottom tab bar when it's shown.
+- **Checked:** no text below 12px, no hard-coded colors (except product color swatches, which are data).
+  81 page loads at 390, 820 and 1440px: no sideways scrolling and no console errors.

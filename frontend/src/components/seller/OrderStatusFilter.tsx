@@ -15,8 +15,8 @@ export function OrderStatusFilter({ active }: { active: string }) {
           key={f.value}
           href={f.value === "all" ? "/seller/orders" : `/seller/orders?status=${f.value}`}
           aria-current={active === f.value ? "page" : undefined}
-          className={`inline-flex min-h-10 items-center rounded-pill px-4 text-sm font-semibold ${
-            active === f.value ? "bg-seller text-on-seller" : "bg-surface text-ink shadow-card hover:bg-seller-soft"
+          className={`inline-flex min-h-11 items-center rounded-pill px-4 text-sm font-semibold ${
+            active === f.value ? "bg-chrome text-on-chrome" : "bg-surface text-ink shadow-card hover:bg-surface-tint"
           }`}
         >
           {f.label}

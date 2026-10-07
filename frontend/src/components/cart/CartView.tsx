@@ -67,13 +67,13 @@ export function CartView({ cancelled }: { cancelled: boolean }) {
             <section aria-labelledby="cart-title" className="rounded-card bg-surface p-5 shadow-card sm:p-6">
               <div className="flex flex-wrap items-end justify-between gap-2 border-b border-line pb-3">
                 <div>
-                  <h1 id="cart-title" className="text-3xl font-extrabold tracking-tight">
+                  <h1 id="cart-title" className="text-2xl font-extrabold tracking-tight sm:text-3xl">
                     Shopping Cart
                   </h1>
                   <button
                     type="button"
                     onClick={() => selectAll(!allSelected)}
-                    className="min-h-10 text-sm font-semibold text-accent-text hover:underline"
+                    className="min-h-11 text-sm font-semibold text-accent-text hover:underline"
                   >
                     {allSelected ? "Deselect all items" : "Select all items"}
                   </button>

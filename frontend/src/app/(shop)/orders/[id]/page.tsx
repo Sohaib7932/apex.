@@ -23,7 +23,7 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
       <Link href="/orders" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-accent-text hover:underline">
         <ChevronLeft aria-hidden="true" className="size-4" /> Your Orders
       </Link>
-      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Order details</h1>
+      <h1 className="mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl">Order details</h1>
       {res.ok ? <OrderDetailView order={res.data} /> : <ErrorState title="We couldn't load this order" message={res.message} />}
     </div>
   );

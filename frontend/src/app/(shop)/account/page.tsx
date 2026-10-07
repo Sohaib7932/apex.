@@ -1,4 +1,4 @@
-import { ChevronRight, MapPin, Package, Store, UserRound } from "lucide-react";
+import { ChevronRight, MapPin, Package, ShoppingCart, Store } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -18,12 +18,12 @@ export default async function AccountPage() {
     user.seller
       ? { href: "/seller", icon: Store, title: "Seller workspace", body: `Manage ${user.seller.store_name}` }
       : { href: "/seller/start", icon: Store, title: "Start selling", body: "Open a store in under a minute" },
-    { href: "/cart", icon: UserRound, title: "Your Cart", body: "Items you're thinking about" },
+    { href: "/cart", icon: ShoppingCart, title: "Your Cart", body: "Items you're thinking about" },
   ];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
-      <h1 className="text-3xl font-extrabold tracking-tight">Your account</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Your account</h1>
       <p className="mt-1 text-ink-muted">
         Signed in as <span className="font-semibold text-ink">{user.name}</span> ({user.email})
       </p>

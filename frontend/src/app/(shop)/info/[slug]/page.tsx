@@ -32,7 +32,7 @@ export default async function InfoPage({ params }: PageProps<"/info/[slug]">) {
         <span className="grid size-12 place-items-center rounded-pill bg-primary-soft text-accent-text">
           <Info aria-hidden="true" className="size-6" />
         </span>
-        <h1 className="mt-4 text-3xl font-extrabold tracking-tight">{page.title}</h1>
+        <h1 className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">{page.title}</h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-muted">{page.body}</p>
         <p className="mt-6 text-sm text-ink-muted">
           Apex is a demo store. Need something else?{" "}

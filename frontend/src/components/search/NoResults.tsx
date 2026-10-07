@@ -28,7 +28,7 @@ export function NoResults({ state, popular }: { state: SearchState; popular: Pro
             <li key={s}>
               <Link
                 href={`/search?q=${encodeURIComponent(s)}`}
-                className="inline-flex min-h-10 items-center rounded-pill border border-line px-3 text-sm font-semibold text-ink hover:bg-surface-tint"
+                className="inline-flex min-h-11 items-center rounded-pill border border-line px-3 text-sm font-semibold text-ink hover:bg-surface-tint"
               >
                 {s}
               </Link>

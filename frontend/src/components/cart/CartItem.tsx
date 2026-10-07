@@ -20,7 +20,7 @@ function StockLabel({ line }: { line: CartLine }) {
     return <span className="font-bold text-danger">Only {line.stock} available. Lower the quantity to check out.</span>;
   }
   if (line.stock <= 5) return <span className="font-bold text-deal">Only {line.stock} left in stock</span>;
-  return <span className="font-bold text-success">In Stock</span>;
+  return <span className="inline-flex rounded-control bg-chrome px-1.5 py-0.5 text-2xs font-bold text-on-chrome">In Stock</span>;
 }
 
 export function CartItem({ line }: { line: CartLine }) {

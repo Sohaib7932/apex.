@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 
-type Variant = "primary" | "dark" | "secondary" | "ghost" | "seller" | "danger" | "outline";
+type Variant = "primary" | "dark" | "secondary" | "ghost" | "danger" | "outline";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
@@ -10,12 +10,11 @@ const variants: Record<Variant, string> = {
   secondary: "bg-surface-tint-2 text-ink hover:bg-surface-tint-3",
   ghost: "bg-transparent text-ink hover:bg-surface-tint",
   outline: "border border-line bg-surface text-ink hover:bg-surface-tint",
-  seller: "bg-seller text-on-seller hover:bg-seller-hover",
   danger: "bg-danger text-white hover:opacity-90",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "min-h-9 px-3 text-sm",
+  sm: "min-h-11 px-3 text-sm sm:min-h-9",
   md: "min-h-11 px-4 text-sm",
   lg: "min-h-12 px-6 text-base",
 };

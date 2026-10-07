@@ -18,8 +18,8 @@ export function BadgesField({ value, onChange }: { value: string[]; onChange: (v
               type="button"
               aria-pressed={on}
               onClick={() => onChange(on ? value.filter((x) => x !== b) : [...value, b])}
-              className={`inline-flex min-h-10 items-center gap-1.5 rounded-pill border px-3 text-sm font-semibold ${
-                on ? "border-seller bg-seller text-on-seller" : "border-line bg-surface hover:bg-seller-soft"
+              className={`inline-flex min-h-11 items-center gap-1.5 rounded-pill border px-3 text-sm font-semibold ${
+                on ? "border-chrome bg-chrome text-on-chrome" : "border-line bg-surface hover:bg-surface-tint"
               }`}
             >
               {on && <Check aria-hidden="true" className="size-4" />}

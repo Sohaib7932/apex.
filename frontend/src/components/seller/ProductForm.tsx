@@ -208,7 +208,7 @@ export function ProductForm({
             <span className="text-sm text-ink-muted">
               Status: <span className="font-bold text-ink">{product.status === "published" ? "Published" : "Draft"}</span>
             </span>
-            <Button type="submit" variant="seller" loading={busy === "save"} disabled={busy !== null}>
+            <Button type="submit" variant="primary" loading={busy === "save"} disabled={busy !== null}>
               Save changes
             </Button>
           </>
@@ -217,7 +217,7 @@ export function ProductForm({
             <Button variant="outline" loading={busy === "draft"} disabled={busy !== null} onClick={() => submit("draft")}>
               Save as draft
             </Button>
-            <Button type="submit" variant="seller" loading={busy === "published"} disabled={busy !== null}>
+            <Button type="submit" variant="primary" loading={busy === "published"} disabled={busy !== null}>
               Publish
             </Button>
           </>

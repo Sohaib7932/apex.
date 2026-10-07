@@ -93,13 +93,13 @@ export function StoreSettingsForm({ store }: { store: Store }) {
           {logoOk ? (
             <ProductImage src={logo.trim()} alt="Logo preview" sizes="64px" fit="contain" className="size-16 shrink-0 rounded-control border border-line" />
           ) : (
-            <span className="grid size-16 shrink-0 place-items-center rounded-control bg-seller-soft text-seller" aria-hidden="true">
+            <span className="grid size-16 shrink-0 place-items-center rounded-control bg-primary-soft text-accent-text" aria-hidden="true">
               <StoreIcon className="size-7" />
             </span>
           )}
         </div>
       </div>
-      <Button type="submit" variant="seller" size="lg" loading={busy}>
+      <Button type="submit" variant="primary" size="lg" loading={busy}>
         Save changes
       </Button>
     </form>

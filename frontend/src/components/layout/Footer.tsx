@@ -20,10 +20,10 @@ export function Footer() {
         {footerColumns.map((col) => (
           <section key={col.title}>
             <h2 className="mb-3 text-base font-bold">{col.title}</h2>
-            <ul className="space-y-2">
+            <ul className="md:space-y-2">
               {col.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-on-chrome-muted hover:text-on-chrome hover:underline">
+                  <Link href={link.href} className="inline-flex min-h-11 items-center text-sm text-on-chrome-muted hover:text-on-chrome hover:underline md:min-h-0">
                     {link.label}
                   </Link>
                 </li>
@@ -56,7 +56,7 @@ export function Footer() {
             <ul className="flex flex-wrap gap-x-4 gap-y-1">
               {legalLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-xs font-semibold hover:underline">
+                  <Link href={link.href} className="inline-flex min-h-11 items-center text-xs font-semibold hover:underline md:min-h-0">
                     {link.label}
                   </Link>
                 </li>

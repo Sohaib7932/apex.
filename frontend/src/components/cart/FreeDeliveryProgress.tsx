@@ -32,7 +32,7 @@ export function FreeDeliveryProgress({ summary }: { summary: CartSummary }) {
       <div className="w-full sm:w-64">
         <div className="mb-1 flex justify-between text-xs font-semibold text-ink-muted">
           <span>Free delivery threshold</span>
-          <span className={unlocked ? "text-success" : ""}>{unlocked ? "Unlocked" : `${Math.round(pct)}%`}</span>
+          <span className={unlocked ? "font-bold text-accent-text" : ""}>{unlocked ? "Unlocked" : `${Math.round(pct)}%`}</span>
         </div>
         <ProgressBar value={pct} label="Progress toward free delivery" />
       </div>

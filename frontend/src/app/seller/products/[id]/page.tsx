@@ -33,7 +33,7 @@ export default async function EditProductPage({ params }: PageProps<"/seller/pro
         subtitle={product.data.title}
         action={
           product.data.status === "published" && (
-            <Link href={`/product/${product.data.slug}`} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-seller hover:underline">
+            <Link href={`/product/${product.data.slug}`} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-accent-text hover:underline">
               View in store <ExternalLink aria-hidden="true" className="size-4" />
             </Link>
           )

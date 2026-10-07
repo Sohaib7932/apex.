@@ -42,7 +42,7 @@ export function VariantPicker() {
               Color: <span className="font-bold">{color?.label}</span>
             </span>
             {color && (
-              <span className={`text-xs font-bold uppercase ${color.stock > 0 ? "text-success" : "text-danger"}`}>
+              <span className={`text-xs font-bold uppercase ${color.stock > 0 ? "text-accent-text" : "text-danger"}`}>
                 {color.stock > 0 ? "In stock" : "Out of stock"}
               </span>
             )}

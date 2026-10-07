@@ -1,12 +1,4 @@
-export function ProgressBar({
-  value,
-  label,
-  tone = "primary",
-}: {
-  value: number;
-  label: string;
-  tone?: "primary" | "seller";
-}) {
+export function ProgressBar({ value, label }: { value: number; label: string }) {
   const pct = Math.max(0, Math.min(100, value));
   return (
     <div
@@ -18,7 +10,7 @@ export function ProgressBar({
       className="h-2 w-full overflow-hidden rounded-pill bg-surface-tint-3"
     >
       <div
-        className={`h-full rounded-pill ${tone === "seller" ? "bg-seller" : "bg-primary"}`}
+        className="h-full rounded-pill bg-primary"
         style={{ width: `${pct}%` }}
       />
     </div>

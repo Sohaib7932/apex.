@@ -23,7 +23,7 @@ export default async function SellerOverviewPage() {
         title="Overview"
         subtitle={`How ${data.store_name} is doing over the last 30 days`}
         action={
-          <ButtonLink href="/seller/products/new" variant="seller">
+          <ButtonLink href="/seller/products/new" variant="primary">
             <Plus aria-hidden="true" className="size-4" /> Add a product
           </ButtonLink>
         }

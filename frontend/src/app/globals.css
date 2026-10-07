@@ -42,28 +42,17 @@
   /* Text on orange. Design used white (~2.2:1); dark ink reads at ~8:1. */
   --color-on-primary: #1a0f00;
   --color-accent-text: #904d00; /* orange-family text links and labels */
+  /* Deeper orange for fills that carry white text (4.8:1), e.g. the active Buying/Selling segment. */
+  --color-primary-strong: #b85700;
+  /* Chart bars: orange step that passes the dataviz lightness, chroma and 3:1 contrast checks. */
+  --color-chart: #d96b00;
 
   /* ---- Status ---- */
   --color-star: #fe8500;
   --color-deal: #840000; /* discount text */
   --color-deal-soft: #ffdad6; /* discount badge background */
-  --color-success: #1d7a46;
-  --color-success-soft: #e3f3ea;
   --color-danger: #b42318;
 
-  /*
-   * ---- Selling (seller workspace + Buying/Selling switch) ----
-   * PLACEHOLDER VALUES. These must be sampled from design/seller-toggle.png,
-   * which has not been provided yet. Every seller surface reads these tokens,
-   * so swapping the four hexes below re-themes all of it.
-   */
-  --color-seller: #2f6b4f;
-  --color-seller-hover: #265a42;
-  --color-seller-soft: #e3efe8;
-  --color-on-seller: #ffffff;
-  --color-switch-track: #f6efe0; /* cream pill background */
-  /* Chart bars: a slightly more saturated step of the seller green (passes the dataviz chroma/contrast checks). */
-  --color-seller-chart: #1f7a4f;
 
   /* ---- Radii ---- */
   --radius-control: 0.375rem; /* buttons, inputs */

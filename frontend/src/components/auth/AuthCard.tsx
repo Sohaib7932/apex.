@@ -6,7 +6,7 @@ export function AuthCard({ title, subtitle, children }: { title: string; subtitl
   return (
     <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 sm:py-14 lg:grid-cols-[1fr_22rem] lg:items-start">
       <section className="rounded-card bg-surface p-6 shadow-card sm:p-10">
-        <h1 className="text-3xl font-extrabold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h1>
         <p className="mt-2 text-base text-ink-muted">{subtitle}</p>
         <div className="mt-8">{children}</div>
       </section>

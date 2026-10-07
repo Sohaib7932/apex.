@@ -81,7 +81,7 @@ export function SalesChart({ days }: { days: Day[] }) {
                   <div
                     className={`w-full max-w-6 rounded-t-[4px] transition-opacity ${
                       shown !== null && shown !== i ? "opacity-40" : ""
-                    } bg-seller-chart`}
+                    } bg-chart`}
                     style={{ height: `${h}%`, minHeight: d.revenue_cents > 0 ? 2 : 0 }}
                   />
                   {i === peak && d.revenue_cents > 0 && shown === null && (
@@ -120,7 +120,7 @@ export function SalesChart({ days }: { days: Day[] }) {
 )}
 
       <details className="mt-4 text-sm">
-        <summary className="inline-flex min-h-10 cursor-pointer items-center font-semibold text-seller">
+        <summary className="inline-flex min-h-11 cursor-pointer items-center font-semibold text-accent-text">
           Show as a table
         </summary>
         <div className="mt-2 max-h-64 overflow-y-auto rounded-control border border-line">

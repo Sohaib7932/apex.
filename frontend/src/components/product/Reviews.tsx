@@ -66,7 +66,7 @@ function ReviewForm({ slug, onDone }: { slug: string; onDone: (r: Review) => voi
               onClick={() => setRating(n)}
               aria-label={`${n} star${n > 1 ? "s" : ""}`}
               aria-pressed={rating === n}
-              className="grid size-10 place-items-center rounded-control hover:bg-surface-tint"
+              className="grid size-11 place-items-center rounded-control hover:bg-surface-tint"
             >
               <Star aria-hidden="true" className={`size-7 ${n <= rating ? "fill-star text-star" : "text-line"}`} />
             </button>
@@ -181,7 +181,7 @@ export function Reviews({ slug, initial }: { slug: string; initial: ReviewPage }
                   }}
                   aria-pressed={active}
                   aria-label={`${n} star: ${pct}% of ratings. Show these reviews.`}
-                  className={`grid min-h-9 w-full grid-cols-[3rem_1fr_2.5rem] items-center gap-2 rounded-control px-1 text-sm hover:bg-surface-tint ${
+                  className={`grid min-h-11 w-full grid-cols-[3rem_1fr_2.5rem] sm:min-h-9 items-center gap-2 rounded-control px-1 text-sm hover:bg-surface-tint ${
                     active ? "bg-surface-tint font-bold" : ""
                   }`}
                 >
@@ -309,7 +309,7 @@ export function Reviews({ slug, initial }: { slug: string; initial: ReviewPage }
                     type="button"
                     onClick={() => helpful(r)}
                     disabled={didVote}
-                    className="inline-flex min-h-9 items-center gap-1.5 rounded-control border border-line px-3 font-semibold text-ink hover:bg-surface-tint disabled:opacity-60"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-control border border-line px-3 sm:min-h-9 font-semibold text-ink hover:bg-surface-tint disabled:opacity-60"
                   >
                     <ThumbsUp aria-hidden="true" className="size-3.5" />
                     {didVote ? "Thanks" : "Helpful"}

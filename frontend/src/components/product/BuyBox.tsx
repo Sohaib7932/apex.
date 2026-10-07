@@ -61,7 +61,7 @@ export function BuyBox() {
         {user ? `Deliver to ${user.name.split(" ")[0]}` : "Delivery address set at checkout"}
       </p>
 
-      <p className={`text-base font-bold ${outOfStock ? "text-danger" : stock <= 10 ? "text-deal" : "text-success"}`}>
+      <p className={`text-base font-bold ${outOfStock ? "text-danger" : stock <= 10 ? "text-deal" : "text-ink"}`}>
         {outOfStock ? "Currently unavailable" : stock <= 10 ? `In Stock (only ${stock} left, order soon)` : "In Stock"}
       </p>
 

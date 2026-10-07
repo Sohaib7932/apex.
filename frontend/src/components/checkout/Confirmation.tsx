@@ -55,7 +55,7 @@ export function Confirmation({ orderId }: { orderId: number }) {
     return (
       <div role="status" className="flex flex-col items-center rounded-card bg-surface px-6 py-16 text-center shadow-card">
         {!gaveUp && <Loader2 aria-hidden="true" className="size-10 animate-spin text-primary" />}
-        <h1 className="mt-4 text-2xl font-extrabold">{gaveUp ? "Payment still processing" : "Confirming your payment…"}</h1>
+        <h1 className="mt-4 text-2xl font-extrabold tracking-tight">{gaveUp ? "Payment still processing" : "Confirming your payment…"}</h1>
         <p className="mt-2 max-w-md text-sm text-ink-muted">
           {gaveUp
             ? "Stripe hasn't confirmed this payment yet. You won't be charged twice. Check Your Orders in a minute."
@@ -73,7 +73,7 @@ export function Confirmation({ orderId }: { orderId: number }) {
   return (
     <div className="space-y-6">
       <section className="flex flex-col gap-4 rounded-card bg-surface p-6 shadow-card sm:flex-row sm:items-center">
-        <span className="grid size-14 shrink-0 place-items-center rounded-pill bg-success-soft text-success">
+        <span className="grid size-14 shrink-0 place-items-center rounded-pill bg-primary-soft text-accent-text">
           <CircleCheck aria-hidden="true" className="size-8" />
         </span>
         <div className="flex-1">

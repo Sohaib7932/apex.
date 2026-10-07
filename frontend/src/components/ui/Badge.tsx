@@ -1,14 +1,12 @@
 import type { ReactNode } from "react";
 
-type Tone = "dark" | "orange" | "deal" | "soft" | "seller" | "success" | "muted";
+type Tone = "dark" | "orange" | "deal" | "soft" | "muted";
 
 const tones: Record<Tone, string> = {
   dark: "bg-chrome text-on-chrome",
   orange: "bg-primary text-on-primary",
   deal: "bg-deal-soft text-deal",
   soft: "bg-primary-soft text-accent-text",
-  seller: "bg-seller-soft text-seller",
-  success: "bg-success-soft text-success",
   muted: "bg-surface-tint-2 text-ink-muted",
 };
 

@@ -37,13 +37,13 @@ export function ActiveFilters({ state, filters }: { state: SearchState; filters:
           href={c.href}
           scroll={false}
           aria-label={`Remove filter: ${c.label}`}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-pill border border-line bg-surface px-3 text-sm font-semibold hover:border-ink"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-pill sm:min-h-9 border border-line bg-surface px-3 text-sm font-semibold hover:border-ink"
         >
           {c.label}
           <X aria-hidden="true" className="size-3.5" />
         </Link>
       ))}
-      <Link href={clearFilters(state)} scroll={false} className="min-h-9 px-1 text-sm font-bold text-accent-text hover:underline">
+      <Link href={clearFilters(state)} scroll={false} className="inline-flex min-h-11 items-center px-1 text-sm font-bold text-accent-text hover:underline sm:min-h-9">
         Clear all filters
       </Link>
     </div>

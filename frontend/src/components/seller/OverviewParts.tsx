@@ -23,7 +23,7 @@ function Stat({
     <>
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold text-ink-muted">{label}</p>
-        <span className={`grid size-9 place-items-center rounded-pill ${warn ? "bg-deal-soft text-deal" : "bg-seller-soft text-seller"}`}>
+        <span className={`grid size-9 place-items-center rounded-pill ${warn ? "bg-deal-soft text-deal" : "bg-primary-soft text-accent-text"}`}>
           <Icon aria-hidden="true" className="size-4" />
         </span>
       </div>
@@ -36,7 +36,7 @@ function Stat({
   );
   const cls = "block h-full rounded-card bg-surface p-5 shadow-card";
   return href ? (
-    <Link href={href} className={`${cls} hover:ring-2 hover:ring-seller/40`}>
+    <Link href={href} className={`${cls} hover:ring-2 hover:ring-primary/50`}>
       {body}
     </Link>
   ) : (
@@ -72,17 +72,17 @@ export function StatCards({ data }: { data: SellerOverview }) {
 
 export function EarningsCard({ data }: { data: SellerOverview }) {
   return (
-    <section aria-labelledby="earnings-title" className="flex h-full flex-col rounded-card bg-seller p-5 text-on-seller shadow-card">
-      <p id="earnings-title" className="flex items-center gap-2 text-sm font-semibold opacity-90">
-        <Wallet aria-hidden="true" className="size-4" /> Earnings balance
+    <section aria-labelledby="earnings-title" className="flex h-full flex-col rounded-card bg-chrome p-5 text-on-chrome shadow-card">
+      <p id="earnings-title" className="flex items-center gap-2 text-sm font-semibold text-on-chrome-muted">
+        <Wallet aria-hidden="true" className="size-4 text-primary" /> Earnings balance
       </p>
       <p className="mt-2 text-4xl font-extrabold tracking-tight tabular-nums">{money(data.earnings_cents)}</p>
-      <p className="mt-1 text-sm opacity-90">All paid, shipped and delivered orders</p>
-      <p className="mt-auto pt-4 text-xs opacity-80">Display only: payouts aren&apos;t part of this demo.</p>
+      <p className="mt-1 text-sm text-on-chrome-muted">All paid, shipped and delivered orders</p>
+      <p className="mt-auto pt-4 text-xs text-on-chrome-muted">Display only: payouts aren&apos;t part of this demo.</p>
       {data.to_ship > 0 && (
         <Link
           href="/seller/orders?status=to_ship"
-          className="mt-4 inline-flex min-h-11 items-center justify-between gap-2 rounded-control bg-surface px-4 text-sm font-bold text-seller hover:bg-seller-soft"
+          className="mt-4 inline-flex min-h-11 items-center justify-between gap-2 rounded-control bg-primary px-4 text-sm font-bold text-on-primary hover:bg-primary-hover"
         >
           <span className="flex items-center gap-2">
             <Truck aria-hidden="true" className="size-4" /> {data.to_ship} {data.to_ship === 1 ? "order" : "orders"} to ship
@@ -96,8 +96,8 @@ export function EarningsCard({ data }: { data: SellerOverview }) {
 
 const FULFILLMENT: Record<Fulfillment, { label: string; cls: string }> = {
   to_ship: { label: "To ship", cls: "bg-primary-soft text-accent-text" },
-  shipped: { label: "Shipped", cls: "bg-seller-soft text-seller" },
-  delivered: { label: "Delivered", cls: "bg-success-soft text-success" },
+  shipped: { label: "Shipped", cls: "bg-surface-tint-3 text-ink" },
+  delivered: { label: "Delivered", cls: "bg-chrome text-on-chrome" },
   cancelled: { label: "Cancelled", cls: "bg-deal-soft text-deal" },
 };
 
@@ -113,7 +113,7 @@ export function RecentOrders({ orders }: { orders: SellerOrderRow[] }) {
         <h2 id="recent-title" className="text-lg font-extrabold">
           Recent orders
         </h2>
-        <Link href="/seller/orders" className="inline-flex min-h-11 items-center gap-1 text-sm font-bold text-seller hover:underline">
+        <Link href="/seller/orders" className="inline-flex min-h-11 items-center gap-1 text-sm font-bold text-accent-text hover:underline">
           All orders <ChevronRight aria-hidden="true" className="size-4" />
         </Link>
       </div>

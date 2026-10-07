@@ -38,7 +38,7 @@ export function SortBar({
       scroll={false}
       aria-label={`${name} view`}
       aria-current={state.view === view ? "true" : undefined}
-      className={`grid size-10 place-items-center rounded-control border ${
+      className={`grid size-11 place-items-center rounded-control border ${
         state.view === view ? "border-ink bg-surface-tint-2" : "border-line bg-surface hover:bg-surface-tint"
       }`}
     >
@@ -56,7 +56,7 @@ export function SortBar({
         <button
           type="button"
           onClick={() => drawer.current?.showModal()}
-          className="flex h-10 items-center gap-2 rounded-control border border-line bg-surface px-3 text-sm font-bold lg:hidden"
+          className="flex h-11 items-center gap-2 rounded-control border border-line bg-surface px-3 text-sm font-bold lg:hidden"
         >
           <SlidersHorizontal aria-hidden="true" className="size-4" />
           Filters
@@ -70,7 +70,7 @@ export function SortBar({
             value={state.sort}
             onChange={(e) => navigate(withChanges(state, { sort: e.target.value }))}
             aria-label="Sort results"
-            className="h-10 rounded-control border border-line bg-surface px-2 text-sm font-semibold outline-none focus:border-primary"
+            className="h-11 rounded-control border border-line bg-surface px-2 text-sm font-semibold outline-none focus:border-primary"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>

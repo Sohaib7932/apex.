@@ -34,7 +34,7 @@ function Step({ n, title, done, children }: { n: number; title: string; done?: b
     <section aria-labelledby={`step-${n}`} className="rounded-card bg-surface p-5 shadow-card sm:p-6">
       <h2 id={`step-${n}`} className="flex items-center gap-3 text-xl font-extrabold">
         <span
-          className={`grid size-8 place-items-center rounded-pill text-sm ${done ? "bg-success text-white" : "bg-chrome text-on-chrome"}`}
+          className={`grid size-8 place-items-center rounded-pill text-sm ${done ? "bg-chrome text-white" : "bg-chrome text-on-chrome"}`}
         >
           {done ? <Check aria-hidden="true" className="size-4" /> : n}
         </span>
@@ -306,7 +306,7 @@ export function CheckoutView({ initialAddress }: { initialAddress: Address }) {
           {summary.discount_cents > 0 && (
             <div className="flex justify-between">
               <dt className="text-ink-muted">Promo ({promoCode})</dt>
-              <dd className="font-semibold text-success">-{money(summary.discount_cents)}</dd>
+              <dd className="font-semibold text-accent-text">-{money(summary.discount_cents)}</dd>
             </div>
           )}
           <div className="flex justify-between">

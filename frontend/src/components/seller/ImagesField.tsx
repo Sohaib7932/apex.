@@ -73,7 +73,7 @@ export function ImagesField({ images, onChange, error }: { images: string[]; onC
         {valid && (
           <ProductImage src={draft.trim()} alt="Preview of the image URL" sizes="88px" className="size-22 shrink-0 rounded-control border border-line" />
         )}
-        <Button variant="seller" onClick={add} className="shrink-0">
+        <Button variant="primary" onClick={add} className="shrink-0">
           <ImagePlus aria-hidden="true" className="size-4" /> Add image
         </Button>
       </div>
@@ -85,21 +85,21 @@ export function ImagesField({ images, onChange, error }: { images: string[]; onC
               <div className="relative">
                 <ProductImage src={url} alt={`Image ${i + 1}`} sizes="160px" className="aspect-square w-full rounded-control" />
                 {i === 0 && (
-                  <span className="absolute top-1.5 left-1.5 rounded-control bg-seller px-2 py-0.5 text-2xs font-bold text-on-seller">
+                  <span className="absolute top-1.5 left-1.5 rounded-control bg-primary px-2 py-0.5 text-2xs font-bold text-on-primary">
                     Main
                   </span>
                 )}
               </div>
               <div className="mt-2 flex justify-between">
                 <div className="flex">
-                  <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={`Move image ${i + 1} earlier`} className="grid size-10 place-items-center rounded-control hover:bg-surface-tint disabled:opacity-30">
+                  <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={`Move image ${i + 1} earlier`} className="grid size-11 place-items-center rounded-control hover:bg-surface-tint disabled:opacity-30">
                     <ArrowUp aria-hidden="true" className="size-4" />
                   </button>
-                  <button type="button" disabled={i === images.length - 1} onClick={() => move(i, 1)} aria-label={`Move image ${i + 1} later`} className="grid size-10 place-items-center rounded-control hover:bg-surface-tint disabled:opacity-30">
+                  <button type="button" disabled={i === images.length - 1} onClick={() => move(i, 1)} aria-label={`Move image ${i + 1} later`} className="grid size-11 place-items-center rounded-control hover:bg-surface-tint disabled:opacity-30">
                     <ArrowDown aria-hidden="true" className="size-4" />
                   </button>
                 </div>
-                <button type="button" onClick={() => onChange(images.filter((_, j) => j !== i))} aria-label={`Remove image ${i + 1}`} className="grid size-10 place-items-center rounded-control text-danger hover:bg-deal-soft">
+                <button type="button" onClick={() => onChange(images.filter((_, j) => j !== i))} aria-label={`Remove image ${i + 1}`} className="grid size-11 place-items-center rounded-control text-danger hover:bg-deal-soft">
                   <Trash2 aria-hidden="true" className="size-4" />
                 </button>
               </div>

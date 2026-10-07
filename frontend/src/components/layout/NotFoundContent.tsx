@@ -18,7 +18,7 @@ export function NotFoundContent() {
         <SearchX aria-hidden="true" className="size-8" />
       </span>
       <p className="mt-6 text-sm font-bold uppercase tracking-wide text-accent-text">Error 404</p>
-      <h1 className="mt-2 text-3xl font-extrabold tracking-tight">We couldn&apos;t find that page</h1>
+      <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">We couldn&apos;t find that page</h1>
       <p className="mt-3 text-base text-ink-muted">
         The link may be old, or the product may no longer be for sale. Try searching, or start from one of these:
       </p>

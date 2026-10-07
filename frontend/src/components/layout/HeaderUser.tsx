@@ -11,7 +11,7 @@ import { useCart } from "@/context/CartContext";
 import { ModeSwitch } from "./ModeSwitch";
 
 const chromeLink =
-  "flex shrink-0 items-center gap-1.5 rounded-control px-2 py-1.5 text-on-chrome hover:bg-chrome-2";
+  "flex min-h-11 shrink-0 items-center gap-1.5 rounded-control px-2 py-1 text-on-chrome hover:bg-chrome-2";
 
 function Stacked({ top, bottom }: { top: string; bottom: string }) {
   return (
