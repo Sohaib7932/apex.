@@ -29,14 +29,32 @@ try {
   fail(`bad hook input: ${e.message}`);
 }
 
-const projectDir = process.env.CLAUDE_PROJECT_DIR || input.cwd || process.cwd();
+// Sessions may be started in a subfolder (frontend/, backend/). Always log into the repo
+// root: the nearest ancestor that has .agent-logs/ (or this hook) in it.
+function findRepoRoot(start) {
+  let dir = path.resolve(start);
+  for (;;) {
+    if (
+      fs.existsSync(path.join(dir, ".agent-logs")) ||
+      fs.existsSync(path.join(dir, ".claude", "hooks", "agent-capture.mjs"))
+    ) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) return path.resolve(start);
+    dir = parent;
+  }
+}
+
+const projectDir = findRepoRoot(process.env.CLAUDE_PROJECT_DIR || input.cwd || process.cwd());
 const logDir = process.env.AGENT_LOG_DIR || path.join(projectDir, ".agent-logs");
 const stateDir = path.join(os.tmpdir(), "agent-capture");
 const sessionId = input.session_id || "unknown-session";
 const shortId = sessionId.slice(0, 8);
 
 function fail(msg) {
-  // Never block the user's turn; record the problem where it can be seen.
+  // Never block the user's turn, but never fail silently either: record the problem and
+  // show a warning in Claude Code (hook JSON "systemMessage") so a lost prompt is noticed.
   try {
     fs.mkdirSync(path.join(os.tmpdir(), "agent-capture"), { recursive: true });
     fs.appendFileSync(
@@ -44,6 +62,10 @@ function fail(msg) {
       `${new Date().toISOString()} [${event}] ${msg}\n`
     );
   } catch {}
+  const what = event === "prompt" ? "this prompt was NOT logged" : `the ${event} hook failed`;
+  process.stdout.write(
+    JSON.stringify({ systemMessage: `agent-capture: ${what} to .agent-logs (${String(msg).split("\n")[0]})` })
+  );
   process.stderr.write(`agent-capture: ${msg}\n`);
   process.exit(0);
 }
@@ -231,6 +253,23 @@ function append(type, timestamp, model, body) {
   const promptCount = prompts.length + (type === "PROMPT" ? 1 : 0);
   // Prompts are numbered 1..n; responses and events carry the number of the prompt they belong to.
   const num = Math.max(promptCount, 1);
+
+  // The same prompt submitted to two hook registrations (e.g. repo root and a subfolder
+  // .claude/settings.json both loaded) must be logged once.
+  if (type === "PROMPT") {
+    const re = new RegExp(
+      `^\\[LOG_ENTRY type=PROMPT num=\\d+ session=${shortId}\\]\\ntimestamp: (.*)\\nmodel: .*\\n\\n([\\s\\S]*?)\\n\\n(?=\\n\\[LOG_ENTRY|$)`,
+      "gm"
+    );
+    const prev = [...existingBody.matchAll(re)].pop();
+    if (
+      prev &&
+      prev[2].trim() === String(body).trim() &&
+      Math.abs(Date.parse(timestamp) - Date.parse(prev[1])) < 20_000
+    ) {
+      return { file, lastKind, skipped: true };
+    }
+  }
 
   // A Stop after a background task can repeat the turn's final answer; don't log it twice.
   if (type === "RESPONSE") {

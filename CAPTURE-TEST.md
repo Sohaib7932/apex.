@@ -32,3 +32,20 @@ _TODO_
 - **Known issue found by that run:** its `PROMPT` entry has `model: unknown`, because SessionStart had not recorded the model before the first prompt in `-p` mode. The `RESPONSE` entry has the correct model. I left the entry as written, not edited.
 - **Tried to fix `model: unknown`:** I assumed a race between SessionStart and the first prompt and added a 2s wait. A second headless run (`.agent-logs/2026-10-06_14-25-08_d5e89807-....md`) showed SessionStart had fired 5s before the prompt but with no model. In `-p` mode SessionStart doesn't pass one. I reverted the wait. The first PROMPT of a headless session stays `unknown`; its RESPONSE has the real model.
 - **Setup session:** the setup prompt (this brief) was sent before any hook existed, so `UserPromptSubmit` could not capture it.
+
+## Audit, 2026-10-07
+
+- **Method:** every user-typed prompt in Claude Code's session transcripts
+  (`~/.claude/projects/c--Users-NexGen-Desktop-apex/*.jsonl`; no other project folder has apex sessions)
+  was compared with the PROMPT entries in `.agent-logs/`.
+  Result: 22 typed prompts across 4 sessions, **0 missing on disk**. The only non-matches were two `/model`
+  slash-command outputs, which are not prompts and never reach `UserPromptSubmit`. The hook error log was empty.
+- **Why prompts looked missing:** GitHub had only 3 of this session's prompts, because the last push
+  (a595cf7) was early in the session and 12 commits are unpushed. The newest prompt and response are never
+  in that turn's own commit, because the Stop hook writes the response after the agent's final message.
+- **Hardening:** the hook now logs to the repo root even when a session starts in `frontend/` or `backend/`
+  (each has a `.claude/settings.json` that calls the root hook). The same prompt delivered by two hook
+  registrations is logged once. A hook failure shows a warning in Claude Code
+  ("agent-capture: this prompt was NOT logged ...") instead of failing silently.
+- **Known extra entry:** after a session restart, Claude Code itself submits "Continue from where you left
+  off."; it is logged as a prompt although the user didn't type it (session 39197743, prompt 9).
